@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="it.unibo.tw.beans.IngredienteProva" table="ingrediente_prova">
+
+		<id name="idIngredienteProva" column="id_ingredienteprova">
+			<generator class="increment"/>
+		</id>
+
+
+		<property  name="nomeIngrediente" column="nome_ingrediente" unique="true" not-null="true"/>
+
+		<property name="quantita" column="quantita" not-null="true"/>
+
+		<set name="piattiProva" inverse="true" lazy="true" fetch="select" >
+			<key column="id_ingredienteprova" />
+			<many-to-many column="id_piattoprova" class="it.unibo.tw.beans.PiattoProva" />
+		</set>
+		
+	</class>
+</hibernate-mapping>
