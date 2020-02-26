@@ -1,123 +1,118 @@
 package it.unibo.tw;
 
-import it.unibo.tw.dao.db2.*;
-import it.unibo.tw.dao.*;
 import java.util.*;
 import java.io.*;
+import it.unibo.tw.db.*;
 
-public class DAOTest {
+public class JDBCTest {
 	
 	static PrintWriter pw=null;
 	
-	public static final int DAO = DAOFactory.DB2;
-	
-	private static WorkPackageDAO workPackageDAO;	
-	private static WorkPackagePartnerMappingDAO workPackagePartnerMappingDAO;	
-	private static ProgettoDAO progettoDAO;	
-	private static PartnerDAO partnerDAO;	
+	private static WorkPackageRepository workPackageRepository;	
+	private static WorkPackagePartnerMappingRepository workPackagePartnerMappingRepository;	
+	private static ProgettoRepository progettoRepository;	
+	private static PartnerRepository partnerRepository;	
 	
 	public static void main(String[] args) {
-	
-		DAOFactory daoFactory = DAOFactory.getDAOFactory(DAO);
 		
 		// WorkPackage
-		workPackageDAO = daoFactory.getWorkPackageDAO();
-		workPackageDAO.drop();
-		workPackageDAO.createTable();
+		workPackageRepository = new WorkPackageRepository(DataSource.DB2);
+		workPackageRepository.drop();
+		workPackageRepository.createTable();
 		
-		WorkPackageDTO workPackage;
-		workPackage = new WorkPackageDTO();
+		WorkPackage workPackage;
+		workPackage = new WorkPackage();
 		workPackage.setIdWorkPackage(1);
 		workPackage.setNomeWP("nomeWP_1");
 		workPackage.setTitolo("titolo_1");
 		workPackage.setDescrizione("descrizione_1");
-		workPackageDAO.create(workPackage);
+		workPackageRepository.create(workPackage);
 		
-		workPackage = new WorkPackageDTO();
+		workPackage = new WorkPackage();
 		workPackage.setIdWorkPackage(2);
 		workPackage.setNomeWP("nomeWP_2");
 		workPackage.setTitolo("titolo_2");
 		workPackage.setDescrizione("descrizione_2");
-		workPackageDAO.create(workPackage);
+		workPackageRepository.create(workPackage);
 		
-		workPackage = new WorkPackageDTO();
+		workPackage = new WorkPackage();
 		workPackage.setIdWorkPackage(3);
 		workPackage.setNomeWP("nomeWP_3");
 		workPackage.setTitolo("titolo_3");
 		workPackage.setDescrizione("descrizione_3");
-		workPackageDAO.create(workPackage);
+		workPackageRepository.create(workPackage);
 		
 		
 		// Progetto
-		progettoDAO = daoFactory.getProgettoDAO();
-		progettoDAO.drop();
-		progettoDAO.createTable();
+		progettoRepository = new ProgettoRepository(DataSource.DB2);
+		progettoRepository.drop();
+		progettoRepository.createTable();
 		
-		ProgettoDTO progetto;
-		progetto = new ProgettoDTO();
+		Progetto progetto;
+		progetto = new Progetto();
 		progetto.setIdProgetto(1);
 		progetto.setCodiceProgetto("codiceProgetto_1");
 		progetto.setNomeProgetto("nomeProgetto_1");
 		progetto.setAnnoInizio(1);
 		progetto.setDurata(1);
-		progettoDAO.create(progetto);
+		progettoRepository.create(progetto);
 		
-		progetto = new ProgettoDTO();
+		progetto = new Progetto();
 		progetto.setIdProgetto(2);
 		progetto.setCodiceProgetto("codiceProgetto_2");
 		progetto.setNomeProgetto("nomeProgetto_2");
 		progetto.setAnnoInizio(2);
 		progetto.setDurata(2);
-		progettoDAO.create(progetto);
+		progettoRepository.create(progetto);
 		
-		progetto = new ProgettoDTO();
+		progetto = new Progetto();
 		progetto.setIdProgetto(3);
 		progetto.setCodiceProgetto("codiceProgetto_3");
 		progetto.setNomeProgetto("nomeProgetto_3");
 		progetto.setAnnoInizio(3);
 		progetto.setDurata(3);
-		progettoDAO.create(progetto);
+		progettoRepository.create(progetto);
 		
 		
 		// Partner
-		partnerDAO = daoFactory.getPartnerDAO();
-		partnerDAO.drop();
-		partnerDAO.createTable();
+		partnerRepository = new PartnerRepository(DataSource.DB2);
+		partnerRepository.drop();
+		partnerRepository.createTable();
 		
-		PartnerDTO partner;
-		partner = new PartnerDTO();
+		Partner partner;
+		partner = new Partner();
 		partner.setIdPartner(1);
 		partner.setSiglaPartner("siglaPartner_1");
 		partner.setNome("nome_1");
-		partnerDAO.create(partner);
+		partnerRepository.create(partner);
 		
-		partner = new PartnerDTO();
+		partner = new Partner();
 		partner.setIdPartner(2);
 		partner.setSiglaPartner("siglaPartner_2");
 		partner.setNome("nome_2");
-		partnerDAO.create(partner);
+		partnerRepository.create(partner);
 		
-		partner = new PartnerDTO();
+		partner = new Partner();
 		partner.setIdPartner(3);
 		partner.setSiglaPartner("siglaPartner_3");
 		partner.setNome("nome_3");
-		partnerDAO.create(partner);
+		partnerRepository.create(partner);
 		
 		
 
 		// WorkPackagePartnerMapping
-		workPackagePartnerMappingDAO = daoFactory.getWorkPackagePartnerMappingDAO();
-		workPackagePartnerMappingDAO.drop();
-		workPackagePartnerMappingDAO.createTable();
-		workPackagePartnerMappingDAO.create(1,1);
-		workPackagePartnerMappingDAO.create(1,2);
-		workPackagePartnerMappingDAO.create(1,3);
-		workPackagePartnerMappingDAO.create(2,1);
-		workPackagePartnerMappingDAO.create(2,2);
-		workPackagePartnerMappingDAO.create(2,3);
-		workPackagePartnerMappingDAO.create(3,1);
-		workPackagePartnerMappingDAO.create(3,2);
-		workPackagePartnerMappingDAO.create(3,3);
+		workPackagePartnerMappingRepository = new WorkPackagePartnerMappingRepository(DataSource.DB2);
+		workPackagePartnerMappingRepository.drop();
+		workPackagePartnerMappingRepository.createTable();
+		workPackagePartnerMappingRepository.create(1,1);
+		workPackagePartnerMappingRepository.create(1,2);
+		workPackagePartnerMappingRepository.create(1,3);
+		workPackagePartnerMappingRepository.create(2,1);
+		workPackagePartnerMappingRepository.create(2,2);
+		workPackagePartnerMappingRepository.create(2,3);
+		workPackagePartnerMappingRepository.create(3,1);
+		workPackagePartnerMappingRepository.create(3,2);
+		workPackagePartnerMappingRepository.create(3,3);
 		
 		
 		//Scrivi su file
@@ -178,9 +173,9 @@ public class DAOTest {
 		.collect(Collectors.groupingBy(ProgettoDTO::getNomeProgetto,Collectors.counting()));
 				
 	*/
-		Set<WorkPackageDTO> workPackages=new LinkedHashSet<WorkPackageDTO>();	
-		Set<ProgettoDTO> progetti=new LinkedHashSet<ProgettoDTO>();	
-		Set<PartnerDTO> partners=new LinkedHashSet<PartnerDTO>();	
+		Set<WorkPackage> workPackages=new LinkedHashSet<WorkPackage>();	
+		Set<Progetto> progetti=new LinkedHashSet<Progetto>();	
+		Set<Partner> partners=new LinkedHashSet<Partner>();	
 
 		CLASSE_SOURCE_PLURALE = CLASSE_SOURCE.FIND_CLASSE_SOURCE_BY_ATTRIBUTO_SOURCE(VALORE_ATTRIBUTO);
 		for(CLASSE_SOURCE NOME1 : CLASSE_SOURCE_PLURALE)

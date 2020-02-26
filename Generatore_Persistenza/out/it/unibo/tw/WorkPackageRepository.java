@@ -1,125 +1,124 @@
-package it.unibo.tw.dao.db2;
+package it.unibo.tw;
 
+import it.unibo.tw.db.*;
 import java.util.*;
 import java.sql.*;
-import it.unibo.tw.dao.*;
 
-public class DB2ProgettoDAO implements ProgettoDAO{
-	
-	static final String TABLE = "progetto";
+public class WorkPackageRepository{
+	private DataSource dataSource;
+	static final String TABLE = "work_package";
 	// == STATEMENT SQL ====================================================================
 
 	// INSERT INTO table ( id, name, description, ...) VALUES ( ?,?, ... );	
 	static final String insert= 
 		"INSERT " +
 			"INTO "+ TABLE + " ( " +
-				"id_progetto," +
-				"codice_progetto," +
-				"nome_progetto," +
-				"anno_inizio," +
-				"durata" +
+				"id_workpackage," +
+				"nome_wp," +
+				"titolo," +
+				"descrizione" +
 			") "+
-		"VALUESE (?,?,?,?,?) ";
+		"VALUESE (?,?,?,?) ";
 
 	// SELECT * FROM table WHERE idcolumn = ?;
-	static String read_by_idProgetto = 
+	static String read_by_idWorkPackage = 
 			"SELECT * " +
 				"FROM " + TABLE + " " +
-				"WHERE id_progetto = ? ";
+				"WHERE id_workpackage = ? ";
 				
 	// SELECT * FROM table WHERE idcolumn = ?;
-	static String read_by_codiceProgetto = 
+	static String read_by_nomeWP = 
 			"SELECT * " +
 				"FROM " + TABLE + " " +
-				"WHERE codice_progetto = ?";
+				"WHERE nome_wp = ?";
 				
 	// UPDATE table SET xxxcolumn = ?, ... WHERE idcolumn = ?;
 	static String update = 
 			"UPDATE " + TABLE + " " +
 				"SET " + 
-				"id_progetto = ?," +
-				"codice_progetto = ?," +
-				"nome_progetto = ?," +
-				"anno_inizio = ?," +
-				"durata = ?" +
-				"WHERE  id_progetto = ? ";
+				"id_workpackage = ?," +
+				"nome_wp = ?," +
+				"titolo = ?," +
+				"descrizione = ?" +
+				"WHERE  id_workpackage = ? ";
 
 	// SELECT * FROM table WHERE idcolumn = ?;
-	static String delete_by_idProgetto = 
+	static String delete_by_idWorkPackage = 
 			"DELERE " +
 				"FROM " + TABLE + " " +
-				"WHERE id_progetto = ?";
+				"WHERE id_workpackage = ?";
 
 	// SELECT * FROM table WHERE idcolumn = ?;
-	static String delete_by_codiceProgetto = 
+	static String delete_by_nomeWP = 
 			"DELERE " +
 				"FROM " + TABLE + " " +
-				"WHERE codice_progetto = ?";
+				"WHERE nome_wp = ?";
 				
-
 	// -------------------------------------------------------------------------------------
 
 	// CREATE entrytable ( code INT NOT NULL PRIMARY KEY, ... );
 	static String create = 
 		" CREATE " +
 			" TABLE " + TABLE +" ( " +
-				"id_progetto INT NOT NULL, "+
-				"codice_progetto VARCHAR(100) NOT NULL, "+
-				"nome_progetto VARCHAR(100) NOT NULL, "+
-				"anno_inizio INT NOT NULL, "+
-				"durata INT NOT NULL, "+
-				"FOREING KEY(id_workpackage) REFERENCES work_package(id_workpackage) "+
-				"UNIQUE(codice_progetto), "+
-				"PRIMARY KEY(idProgetto) " +
+				"id_workpackage INT NOT NULL, "+
+				"nome_wp VARCHAR(100) NOT NULL, "+
+				"titolo VARCHAR(100) NOT NULL, "+
+				"descrizione VARCHAR(100) NOT NULL, "+
+				"FOREING KEY(id_progetto) REFERENCES progetto(id_progetto) "+
+				"UNIQUE(nome_wp), "+
+				"PRIMARY KEY(id_workpackage) " +
 			") ";
 
 	static String drop = 
 		"DROP TABLE " + TABLE ;
 		
-		
 	// QUERY ----		
-	static final String find_progetto_by_nomeProgetto = 
+	static final String find_work_package_by_titolo = 
 			" SELECT * "+
 			" FROM "+ TABLE + 
-			" WHERE nome_progetto = ? ";
+			" WHERE titolo = ? ";
 			
-	static final String find_progetto_by_annoInizio = 
+	static final String find_work_package_by_descrizione = 
 			" SELECT * "+
 			" FROM "+ TABLE + 
-			" WHERE anno_inizio = ? ";
+			" WHERE descrizione = ? ";
 			
-	static final String find_progetto_by_durata = 
+	static final String find_work_package_by_idProgetto = 
 			" SELECT * "+
 			" FROM "+ TABLE + 
-			" WHERE durata = ? ";
+			" WHERE id_progetto = ? ";
 			
+ 
+	public  WorkPackageRepository(int databaseType) {
+		dataSource = new DataSource(databaseType);
+	} 
+
 	
 	//Create
-	@Override
-	public boolean create(ProgettoDTO progetto) {
+	public boolean create(WorkPackage workPackage) throws PersistenceException {
 		// --- 1. Dichiarazione della variabile per il risultato ---\r\n" + 
 		boolean result = false;
-		Connection conn = null;
+		PreparedStatement statement = null;
+		Connection connection = null;
 		// --- 2. Controlli preliminari sui dati in ingresso ---      
-		if(progetto == null)
+		if(workPackage == null)
 			return result;
 		try {
-			// --- 3. Apertura della connessione ---  
-			conn = DB2DAOFactory.createConnection(); 
-			//if (conn.getMetaData().supportsTransactions()) // se si vuole verificare e gestire il supporto alle transazioni
-			conn.setAutoCommit(false); // start transaction block
-			// --- 4. Tentativo di accesso al db e impostazione del risultato ---      
+			// --- 3. Apertura della connessione ---   
+			connection = this.dataSource.getConnection();
+			//if (connection.getMetaData().supportsTransactions()) // se si vuole verificare e gestire il supporto alle transazioni
+			connection.setAutoCommit(false); // start transaction block
+			// --- 4. Tentativo di accesso al db e impostazione del risultato ---            
 			// --- a. Crea (se senza parametri) o prepara (se con parametri) lo statement      
-			PreparedStatement statement = conn.prepareStatement(insert);
+			statement = connection.prepareStatement(insert);
 			// --- b. Pulisci e imposta i parametri (se ve ne sono)
-			statement.setInt(1,progetto.getIdProgetto());
-			statement.setString(2,progetto.getCodiceProgetto());
-			statement.setString(3,progetto.getNomeProgetto());
-			statement.setInt(4,progetto.getAnnoInizio());
-			statement.setInt(5,progetto.getDurata());
+			statement.setInt(1,workPackage.getIdWorkPackage());
+			statement.setString(2,workPackage.getNomeWP());
+			statement.setString(3,workPackage.getTitolo());
+			statement.setString(4,workPackage.getDescrizione());
 			// --- c. Esegui l'azione sul database ed estrai il risultato (se atteso)      
 			statement.executeUpdate();
-			conn.commit(); //esegui transazione
+			connection.commit(); //esegui transazione
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			result = true;
 			// --- e. Rilascia la struttura dati del risultato      
@@ -128,19 +127,27 @@ public class DB2ProgettoDAO implements ProgettoDAO{
 		}      
 		// --- 5. Gestione di eventuali eccezioni ---      
 		catch (Exception e) {      
-			if (conn != null) {
+			if (connection != null) {
 				try {
 					System.err.print("Transaction is being rolled back");
-					conn.rollback();
+					connection.rollback();
 				} catch(SQLException excep) {
-					excep.printStackTrace();
+					throw new PersistenceException(excep.getMessage());
 				}
 			}
-			e.printStackTrace();
+			throw new PersistenceException(e.getMessage());
 		}      
 		// --- 6. Rilascio, SEMPRE E COMUNQUE, la connessione prima di restituire il controllo al chiamante      
-		finally {      
-			DB2DAOFactory.closeConnection(conn);
+		finally {  
+			try {    
+				if (statement != null)
+					statement.close();
+				if (connection!= null)
+					connection.close();
+				connection.setAutoCommit(true); //una buona prassi è ripristinare l'auto-commit
+			}catch (SQLException e) {
+				throw new PersistenceException(e.getMessage());
+			}
 		}      
 		// --- 7. Restituzione del risultato (eventualmente di fallimento)      
 		return result;
@@ -148,33 +155,32 @@ public class DB2ProgettoDAO implements ProgettoDAO{
 	
 	
 	//Read By
-	@Override
-	public ProgettoDTO readByIdProgetto(int idProgetto) {
+	public WorkPackage readByIdWorkPackage(int idWorkPackage) throws PersistenceException {
 		// --- 1. Dichiarazione della variabile per il risultato ---\r\n" + 
-		ProgettoDTO result = null;
-		Connection conn = null;
+		WorkPackage result = null;
+		PreparedStatement statement = null;
+		Connection connection = null;
 		// --- 2. Controlli preliminari sui dati in ingresso ---      
-		if(idProgetto < 0)
+		if(idWorkPackage < 0)
 			return result;
 		try {
-			// --- 3. Apertura della connessione ---  
-			conn = DB2DAOFactory.createConnection(); 
-			// --- 4. Tentativo di accesso al db e impostazione del risultato ---      
+			// --- 3. Apertura della connessione ---   
+			connection = this.dataSource.getConnection();
+			// --- 4. Tentativo di accesso al db e impostazione del risultato ---            
 			// --- a. Crea (se senza parametri) o prepara (se con parametri) lo statement      
-			PreparedStatement statement = conn.prepareStatement(read_by_idProgetto);
+			statement = connection.prepareStatement(read_by_idWorkPackage);
 			// --- b. Pulisci e imposta i parametri (se ve ne sono)
 			statement.clearParameters();
-			statement.setInt(1,idProgetto);
+			statement.setInt(1,idWorkPackage);
 			// --- c. Esegui l'azione sul database ed estrai il risultato (se atteso)      
 			ResultSet rs = statement.executeQuery();
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			if ( rs.next() ) {
-				result = new ProgettoDTO();
-				result.setIdProgetto(rs.getInt("idProgetto"));
-				result.setCodiceProgetto(rs.getString("codiceProgetto"));
-				result.setNomeProgetto(rs.getString("nomeProgetto"));
-				result.setAnnoInizio(rs.getInt("annoInizio"));
-				result.setDurata(rs.getInt("durata"));
+				result = new WorkPackage();
+				result.setIdWorkPackage(rs.getInt("idWorkPackage"));
+				result.setNomeWP(rs.getString("nomeWP"));
+				result.setTitolo(rs.getString("titolo"));
+				result.setDescrizione(rs.getString("descrizione"));
 			}
 			// --- e. Rilascia la struttura dati del risultato      
 			rs.close();
@@ -183,43 +189,49 @@ public class DB2ProgettoDAO implements ProgettoDAO{
 		}      
 		// --- 5. Gestione di eventuali eccezioni ---      
 		catch (Exception e) {      
-			e.printStackTrace();
+			throw new PersistenceException(e.getMessage());
 		}      
 		// --- 6. Rilascio, SEMPRE E COMUNQUE, la connessione prima di restituire il controllo al chiamante      
-		finally {      
-			DB2DAOFactory.closeConnection(conn);
+		finally {  
+			try {    
+				if (statement != null)
+					statement.close();
+				if (connection!= null)
+					connection.close();
+			}catch (SQLException e) {
+				throw new PersistenceException(e.getMessage());
+			}
 		}      
 		// --- 7. Restituzione del risultato (eventualmente di fallimento)      
 		return result;
 	}
 	
-	@Override
-	public ProgettoDTO readByCodiceProgetto(String codiceProgetto) {
+	public WorkPackage readByNomeWP(String nomeWP) throws PersistenceException {
 		// --- 1. Dichiarazione della variabile per il risultato ---\r\n" + 
-		ProgettoDTO result = null;
-		Connection conn = null;
+		WorkPackage result = null;
+		PreparedStatement statement = null;
+		Connection connection = null;
 		// --- 2. Controlli preliminari sui dati in ingresso ---      
-		if(codiceProgetto == null || codiceProgetto.isEmpty() )
+		if(nomeWP == null || nomeWP.isEmpty() )
 			return result;
 		try {
-			// --- 3. Apertura della connessione ---  
-			conn = DB2DAOFactory.createConnection(); 
-			// --- 4. Tentativo di accesso al db e impostazione del risultato ---      
+			// --- 3. Apertura della connessione ---   
+			connection = this.dataSource.getConnection();
+			// --- 4. Tentativo di accesso al db e impostazione del risultato ---            
 			// --- a. Crea (se senza parametri) o prepara (se con parametri) lo statement      
-			PreparedStatement statement = conn.prepareStatement(read_by_codiceProgetto);
+			statement = connection.prepareStatement(read_by_nomeWP);
 			// --- b. Pulisci e imposta i parametri (se ve ne sono)
 			statement.clearParameters();
-			statement.setString(1,codiceProgetto);
+			statement.setString(1,nomeWP);
 			// --- c. Esegui l'azione sul database ed estrai il risultato (se atteso)      
 			ResultSet rs = statement.executeQuery();
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			if ( rs.next() ) {
-				result = new ProgettoDTO();
-				result.setIdProgetto(rs.getInt("idProgetto"));
-				result.setCodiceProgetto(rs.getString("codiceProgetto"));
-				result.setNomeProgetto(rs.getString("nomeProgetto"));
-				result.setAnnoInizio(rs.getInt("annoInizio"));
-				result.setDurata(rs.getInt("durata"));
+				result = new WorkPackage();
+				result.setIdWorkPackage(rs.getInt("idWorkPackage"));
+				result.setNomeWP(rs.getString("nomeWP"));
+				result.setTitolo(rs.getString("titolo"));
+				result.setDescrizione(rs.getString("descrizione"));
 			}
 			// --- e. Rilascia la struttura dati del risultato      
 			rs.close();
@@ -228,11 +240,18 @@ public class DB2ProgettoDAO implements ProgettoDAO{
 		}      
 		// --- 5. Gestione di eventuali eccezioni ---      
 		catch (Exception e) {      
-			e.printStackTrace();
+			throw new PersistenceException(e.getMessage());
 		}      
 		// --- 6. Rilascio, SEMPRE E COMUNQUE, la connessione prima di restituire il controllo al chiamante      
-		finally {      
-			DB2DAOFactory.closeConnection(conn);
+		finally {  
+			try {    
+				if (statement != null)
+					statement.close();
+				if (connection!= null)
+					connection.close();
+			}catch (SQLException e) {
+				throw new PersistenceException(e.getMessage());
+			}
 		}      
 		// --- 7. Restituzione del risultato (eventualmente di fallimento)      
 		return result;
@@ -240,32 +259,31 @@ public class DB2ProgettoDAO implements ProgettoDAO{
 	
 
 	//Update
-	@Override
-	public boolean update(ProgettoDTO progetto) {
+	public boolean update(WorkPackage workPackage) throws PersistenceException {
 		// --- 1. Dichiarazione della variabile per il risultato ---\r\n" + 
 		boolean result = false;
-		Connection conn = null;
+		PreparedStatement statement = null;
+		Connection connection = null;
 		// --- 2. Controlli preliminari sui dati in ingresso ---      
-		if(progetto == null)
+		if(workPackage == null)
 			return result;
 		try {
-			// --- 3. Apertura della connessione ---  
-			conn = DB2DAOFactory.createConnection(); 
-			//if (conn.getMetaData().supportsTransactions()) // se si vuole verificare e gestire il supporto alle transazioni
-			conn.setAutoCommit(false); // start transaction block
-			// --- 4. Tentativo di accesso al db e impostazione del risultato ---      
+			// --- 3. Apertura della connessione ---   
+			connection = this.dataSource.getConnection();
+			//if (connection.getMetaData().supportsTransactions()) // se si desidera verificare e gestire il supporto alle transazioni
+			connection.setAutoCommit(false); // start transaction block
+			// --- 4. Tentativo di accesso al db e impostazione del risultato ---            
 			// --- a. Crea (se senza parametri) o prepara (se con parametri) lo statement      
-			PreparedStatement statement = conn.prepareStatement(update);
+			statement = connection.prepareStatement(update);
 			// --- b. Pulisci e imposta i parametri (se ve ne sono)
 			statement.clearParameters();
-			statement.setInt(1,progetto.getIdProgetto());
-			statement.setString(2,progetto.getCodiceProgetto());
-			statement.setString(3,progetto.getNomeProgetto());
-			statement.setInt(4,progetto.getAnnoInizio());
-			statement.setInt(5,progetto.getDurata());
+			statement.setInt(1,workPackage.getIdWorkPackage());
+			statement.setString(2,workPackage.getNomeWP());
+			statement.setString(3,workPackage.getTitolo());
+			statement.setString(4,workPackage.getDescrizione());
 			// --- c. Esegui l'azione sul database ed estrai il risultato (se atteso)      
 			statement.executeUpdate();
-			conn.commit(); //esegui transazione
+			connection.commit(); //esegui transazione
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			result = true;
 			// --- e. Rilascia la struttura dati del risultato      
@@ -274,19 +292,27 @@ public class DB2ProgettoDAO implements ProgettoDAO{
 		}      
 		// --- 5. Gestione di eventuali eccezioni ---      
 		catch (Exception e) {      
-			if (conn != null) {
+			if (connection != null) {
 				try {
 					System.err.print("Transaction is being rolled back");
-					conn.rollback();
+					connection.rollback();
 				} catch(SQLException excep) {
-					excep.printStackTrace();
+					throw new PersistenceException(excep.getMessage());
 				}
 			}
-			e.printStackTrace();
+			throw new PersistenceException(e.getMessage());
 		}      
 		// --- 6. Rilascio, SEMPRE E COMUNQUE, la connessione prima di restituire il controllo al chiamante      
-		finally {      
-			DB2DAOFactory.closeConnection(conn);
+		finally {  
+			try {    
+				if (statement != null)
+					statement.close();
+				if (connection!= null)
+					connection.close();
+				connection.setAutoCommit(true); //una buona prassi è ripristinare l'auto-commit
+			}catch (SQLException e) {
+				throw new PersistenceException(e.getMessage());
+			}
 		}      
 		// --- 7. Restituzione del risultato (eventualmente di fallimento)      
 		return result;
@@ -294,23 +320,23 @@ public class DB2ProgettoDAO implements ProgettoDAO{
 	
 	
 	//Delete By
-	@Override
-	public boolean deleteByIdProgetto(int idProgetto) {
+	public boolean deleteByIdWorkPackage(int idWorkPackage) throws PersistenceException {
 		// --- 1. Dichiarazione della variabile per il risultato ---\r\n" + 
 		boolean result = false;
-		Connection conn = null;
+		PreparedStatement statement = null;
+		Connection connection = null;
 		// --- 2. Controlli preliminari sui dati in ingresso ---      
-		if(idProgetto < 0)
+		if(idWorkPackage < 0)
 			return result;
 		try {
-			// --- 3. Apertura della connessione ---  
-			conn = DB2DAOFactory.createConnection(); 
-			// --- 4. Tentativo di accesso al db e impostazione del risultato ---      
+			// --- 3. Apertura della connessione ---   
+			connection = this.dataSource.getConnection();
+			// --- 4. Tentativo di accesso al db e impostazione del risultato ---            
 			// --- a. Crea (se senza parametri) o prepara (se con parametri) lo statement      
-			PreparedStatement statement = conn.prepareStatement(delete_by_idProgetto);
+			statement = connection.prepareStatement(delete_by_idWorkPackage);
 			// --- b. Pulisci e imposta i parametri (se ve ne sono)
 			statement.clearParameters();
-			statement.setInt(1,idProgetto);
+			statement.setInt(1,idWorkPackage);
 			// --- c. Esegui l'azione sul database ed estrai il risultato (se atteso)      
 			statement.executeUpdate();
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
@@ -321,33 +347,40 @@ public class DB2ProgettoDAO implements ProgettoDAO{
 		}      
 		// --- 5. Gestione di eventuali eccezioni ---      
 		catch (Exception e) {      
-			e.printStackTrace();
+			throw new PersistenceException(e.getMessage());
 		}      
 		// --- 6. Rilascio, SEMPRE E COMUNQUE, la connessione prima di restituire il controllo al chiamante      
-		finally {      
-			DB2DAOFactory.closeConnection(conn);
+		finally {  
+			try {    
+				if (statement != null)
+					statement.close();
+				if (connection!= null)
+					connection.close();
+			}catch (SQLException e) {
+				throw new PersistenceException(e.getMessage());
+			}
 		}      
 		// --- 7. Restituzione del risultato (eventualmente di fallimento)      
 		return result;
 	}
 	
-	@Override
-	public boolean deleteByCodiceProgetto(String codiceProgetto) {
+	public boolean deleteByNomeWP(String nomeWP) throws PersistenceException {
 		// --- 1. Dichiarazione della variabile per il risultato ---\r\n" + 
 		boolean result = false;
-		Connection conn = null;
+		PreparedStatement statement = null;
+		Connection connection = null;
 		// --- 2. Controlli preliminari sui dati in ingresso ---      
-		if(codiceProgetto == null || codiceProgetto.isEmpty() )
+		if(nomeWP == null || nomeWP.isEmpty() )
 			return result;
 		try {
-			// --- 3. Apertura della connessione ---  
-			conn = DB2DAOFactory.createConnection(); 
-			// --- 4. Tentativo di accesso al db e impostazione del risultato ---      
+			// --- 3. Apertura della connessione ---   
+			connection = this.dataSource.getConnection();
+			// --- 4. Tentativo di accesso al db e impostazione del risultato ---            
 			// --- a. Crea (se senza parametri) o prepara (se con parametri) lo statement      
-			PreparedStatement statement = conn.prepareStatement(delete_by_codiceProgetto);
+			statement = connection.prepareStatement(delete_by_nomeWP);
 			// --- b. Pulisci e imposta i parametri (se ve ne sono)
 			statement.clearParameters();
-			statement.setString(1,codiceProgetto);
+			statement.setString(1,nomeWP);
 			// --- c. Esegui l'azione sul database ed estrai il risultato (se atteso)      
 			statement.executeUpdate();
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
@@ -358,11 +391,18 @@ public class DB2ProgettoDAO implements ProgettoDAO{
 		}      
 		// --- 5. Gestione di eventuali eccezioni ---      
 		catch (Exception e) {      
-			e.printStackTrace();
+			throw new PersistenceException(e.getMessage());
 		}      
 		// --- 6. Rilascio, SEMPRE E COMUNQUE, la connessione prima di restituire il controllo al chiamante      
-		finally {      
-			DB2DAOFactory.closeConnection(conn);
+		finally {  
+			try {    
+				if (statement != null)
+					statement.close();
+				if (connection!= null)
+					connection.close();
+			}catch (SQLException e) {
+				throw new PersistenceException(e.getMessage());
+			}
 		}      
 		// --- 7. Restituzione del risultato (eventualmente di fallimento)      
 		return result;
@@ -370,34 +410,41 @@ public class DB2ProgettoDAO implements ProgettoDAO{
 	
 
 	//Create Table
-	@Override
-	public boolean createTable() {
+	public boolean createTable() throws PersistenceException {
 		// --- 1. Dichiarazione della variabile per il risultato ---\r\n" + 
 		boolean result = false;
-		Connection conn = null;
+		Connection connection = null;
+		Statement statement = null;
 		// --- 2. Controlli preliminari sui dati in ingresso ---      
 		try {
-			// --- 3. Apertura della connessione ---  
-			conn = DB2DAOFactory.createConnection(); 
-			// --- 4. Tentativo di accesso al db e impostazione del risultato ---      
+			// --- 3. Apertura della connessione ---   
+			connection = this.dataSource.getConnection();
+			// --- 4. Tentativo di accesso al db e impostazione del risultato ---            
 			// --- a. Crea (se senza parametri) o prepara (se con parametri) lo statement      
-			Statement stmt = conn.createStatement();
+			statement = connection.createStatement();
 			// --- b. Pulisci e imposta i parametri (se ve ne sono)
 			// --- c. Esegui l'azione sul database ed estrai il risultato (se atteso)      
-			stmt.execute(create);
+			statement.execute(create);
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			result = true;
 			// --- e. Rilascia la struttura dati del risultato      
 			// --- f. Rilascia la struttura dati dello statement      
-			stmt.close();
+			statement.close();
 		}      
 		// --- 5. Gestione di eventuali eccezioni ---      
 		catch (Exception e) {      
-			e.printStackTrace();
+			throw new PersistenceException(e.getMessage());
 		}      
 		// --- 6. Rilascio, SEMPRE E COMUNQUE, la connessione prima di restituire il controllo al chiamante      
-		finally {      
-			DB2DAOFactory.closeConnection(conn);
+		finally {  
+			try {    
+				if (statement != null)
+					statement.close();
+				if (connection!= null)
+					connection.close();
+			}catch (SQLException e) {
+				throw new PersistenceException(e.getMessage());
+			}
 		}      
 		// --- 7. Restituzione del risultato (eventualmente di fallimento)      
 		return result;
@@ -405,34 +452,41 @@ public class DB2ProgettoDAO implements ProgettoDAO{
 	
 
 	//Drop Table
-	@Override
-	public boolean drop() {
+	public boolean drop() throws PersistenceException {
 		// --- 1. Dichiarazione della variabile per il risultato ---\r\n" + 
 		boolean result = false;
-		Connection conn = null;
+		Connection connection = null;
+		Statement statement = null;
 		// --- 2. Controlli preliminari sui dati in ingresso ---      
 		try {
-			// --- 3. Apertura della connessione ---  
-			conn = DB2DAOFactory.createConnection(); 
-			// --- 4. Tentativo di accesso al db e impostazione del risultato ---      
+			// --- 3. Apertura della connessione ---   
+			connection = this.dataSource.getConnection();
+			// --- 4. Tentativo di accesso al db e impostazione del risultato ---            
 			// --- a. Crea (se senza parametri) o prepara (se con parametri) lo statement      
-			Statement stmt = conn.createStatement();
+			statement = connection.createStatement();
 			// --- b. Pulisci e imposta i parametri (se ve ne sono)
 			// --- c. Esegui l'azione sul database ed estrai il risultato (se atteso)      
-			stmt.execute(drop);
+			statement.execute(drop);
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			result = true;
 			// --- e. Rilascia la struttura dati del risultato      
 			// --- f. Rilascia la struttura dati dello statement      
-			stmt.close();
+			statement.close();
 		}      
 		// --- 5. Gestione di eventuali eccezioni ---      
 		catch (Exception e) {      
-			e.printStackTrace();
+			throw new PersistenceException(e.getMessage());
 		}      
 		// --- 6. Rilascio, SEMPRE E COMUNQUE, la connessione prima di restituire il controllo al chiamante      
-		finally {      
-			DB2DAOFactory.closeConnection(conn);
+		finally {  
+			try {    
+				if (statement != null)
+					statement.close();
+				if (connection!= null)
+					connection.close();
+			}catch (SQLException e) {
+				throw new PersistenceException(e.getMessage());
+			}
 		}      
 		// --- 7. Restituzione del risultato (eventualmente di fallimento)      
 		return result;
@@ -440,33 +494,33 @@ public class DB2ProgettoDAO implements ProgettoDAO{
 	
 
 	//Find By
-	@Override
-	public Set<ProgettoDTO> findProgettiByNomeProgetto(String nomeProgetto) {
+	public Set<WorkPackage> findWorkPackagesByTitolo(String titolo) throws PersistenceException {
 		// --- 1. Dichiarazione della variabile per il risultato ---\r\n" + 
-		Set<ProgettoDTO> result = new HashSet<ProgettoDTO>();
-		Connection conn = null;
+		Set<WorkPackage> result = new HashSet<WorkPackage>();
+		PreparedStatement statement = null;
+		Connection connection = null;
 		// --- 2. Controlli preliminari sui dati in ingresso ---      
-		if(nomeProgetto == null || nomeProgetto.isEmpty() )
+		if(titolo == null || titolo.isEmpty() )
 			return result;
 		try {
-			// --- 3. Apertura della connessione ---  
-			conn = DB2DAOFactory.createConnection(); 
-			// --- 4. Tentativo di accesso al db e impostazione del risultato ---      
+			// --- 3. Apertura della connessione ---   
+			connection = this.dataSource.getConnection();
+			// --- 4. Tentativo di accesso al db e impostazione del risultato ---            
 			// --- a. Crea (se senza parametri) o prepara (se con parametri) lo statement      
-			PreparedStatement statement = conn.prepareStatement(find_progetto_by_nomeProgetto);
+			statement = connection.prepareStatement(find_work_package_by_titolo);
 			// --- b. Pulisci e imposta i parametri (se ve ne sono)
 			statement.clearParameters();
-			statement.setString(1, nomeProgetto);
+			statement.setString(1, titolo);
 			// --- c. Esegui l'azione sul database ed estrai il risultato (se atteso)      
 			ResultSet rs = statement.executeQuery();
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			while( rs.next() ) {
-				ProgettoDTO entity = new DB2ProgettoDTOProxy();
-				entity.setIdProgetto(rs.getInt("idProgetto"));
-				entity.setCodiceProgetto(rs.getString("codiceProgetto"));
-				entity.setNomeProgetto(rs.getString("nomeProgetto"));
-				entity.setAnnoInizio(rs.getInt("annoInizio"));
-				entity.setDurata(rs.getInt("durata"));
+				WorkPackage entity = new WorkPackage();
+				entity.setIdWorkPackage(rs.getInt("idWorkPackage"));
+				entity.setNomeWP(rs.getString("nomeWP"));
+				entity.setTitolo(rs.getString("titolo"));
+				entity.setDescrizione(rs.getString("descrizione"));
+				entity.setProgetto(new ProgettoRepository(DataSource.DB2).readByIdProgetto(rs.getInt("IdProgetto")));
 				result.add(entity);
 			}
 			// --- e. Rilascia la struttura dati del risultato      
@@ -476,43 +530,50 @@ public class DB2ProgettoDAO implements ProgettoDAO{
 		}      
 		// --- 5. Gestione di eventuali eccezioni ---      
 		catch (Exception e) {      
-			e.printStackTrace();
+			throw new PersistenceException(e.getMessage());
 		}      
 		// --- 6. Rilascio, SEMPRE E COMUNQUE, la connessione prima di restituire il controllo al chiamante      
-		finally {      
-			DB2DAOFactory.closeConnection(conn);
+		finally {  
+			try {    
+				if (statement != null)
+					statement.close();
+				if (connection!= null)
+					connection.close();
+			}catch (SQLException e) {
+				throw new PersistenceException(e.getMessage());
+			}
 		}      
 		// --- 7. Restituzione del risultato (eventualmente di fallimento)      
 		return result;
 	}
 	
-	@Override
-	public Set<ProgettoDTO> findProgettiByAnnoInizio(int annoInizio) {
+	public Set<WorkPackage> findWorkPackagesByDescrizione(String descrizione) throws PersistenceException {
 		// --- 1. Dichiarazione della variabile per il risultato ---\r\n" + 
-		Set<ProgettoDTO> result = new HashSet<ProgettoDTO>();
-		Connection conn = null;
+		Set<WorkPackage> result = new HashSet<WorkPackage>();
+		PreparedStatement statement = null;
+		Connection connection = null;
 		// --- 2. Controlli preliminari sui dati in ingresso ---      
-		if(annoInizio < 0)
+		if(descrizione == null || descrizione.isEmpty() )
 			return result;
 		try {
-			// --- 3. Apertura della connessione ---  
-			conn = DB2DAOFactory.createConnection(); 
-			// --- 4. Tentativo di accesso al db e impostazione del risultato ---      
+			// --- 3. Apertura della connessione ---   
+			connection = this.dataSource.getConnection();
+			// --- 4. Tentativo di accesso al db e impostazione del risultato ---            
 			// --- a. Crea (se senza parametri) o prepara (se con parametri) lo statement      
-			PreparedStatement statement = conn.prepareStatement(find_progetto_by_annoInizio);
+			statement = connection.prepareStatement(find_work_package_by_descrizione);
 			// --- b. Pulisci e imposta i parametri (se ve ne sono)
 			statement.clearParameters();
-			statement.setInt(1, annoInizio);
+			statement.setString(1, descrizione);
 			// --- c. Esegui l'azione sul database ed estrai il risultato (se atteso)      
 			ResultSet rs = statement.executeQuery();
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			while( rs.next() ) {
-				ProgettoDTO entity = new DB2ProgettoDTOProxy();
-				entity.setIdProgetto(rs.getInt("idProgetto"));
-				entity.setCodiceProgetto(rs.getString("codiceProgetto"));
-				entity.setNomeProgetto(rs.getString("nomeProgetto"));
-				entity.setAnnoInizio(rs.getInt("annoInizio"));
-				entity.setDurata(rs.getInt("durata"));
+				WorkPackage entity = new WorkPackage();
+				entity.setIdWorkPackage(rs.getInt("idWorkPackage"));
+				entity.setNomeWP(rs.getString("nomeWP"));
+				entity.setTitolo(rs.getString("titolo"));
+				entity.setDescrizione(rs.getString("descrizione"));
+				entity.setProgetto(new ProgettoRepository(DataSource.DB2).readByIdProgetto(rs.getInt("IdProgetto")));
 				result.add(entity);
 			}
 			// --- e. Rilascia la struttura dati del risultato      
@@ -522,43 +583,50 @@ public class DB2ProgettoDAO implements ProgettoDAO{
 		}      
 		// --- 5. Gestione di eventuali eccezioni ---      
 		catch (Exception e) {      
-			e.printStackTrace();
+			throw new PersistenceException(e.getMessage());
 		}      
 		// --- 6. Rilascio, SEMPRE E COMUNQUE, la connessione prima di restituire il controllo al chiamante      
-		finally {      
-			DB2DAOFactory.closeConnection(conn);
+		finally {  
+			try {    
+				if (statement != null)
+					statement.close();
+				if (connection!= null)
+					connection.close();
+			}catch (SQLException e) {
+				throw new PersistenceException(e.getMessage());
+			}
 		}      
 		// --- 7. Restituzione del risultato (eventualmente di fallimento)      
 		return result;
 	}
 	
-	@Override
-	public Set<ProgettoDTO> findProgettiByDurata(int durata) {
+	public Set<WorkPackage> findWorkPackagesByIdProgetto(int idProgetto) throws PersistenceException {
 		// --- 1. Dichiarazione della variabile per il risultato ---\r\n" + 
-		Set<ProgettoDTO> result = new HashSet<ProgettoDTO>();
-		Connection conn = null;
+		Set<WorkPackage> result = new HashSet<WorkPackage>();
+		PreparedStatement statement = null;
+		Connection connection = null;
 		// --- 2. Controlli preliminari sui dati in ingresso ---      
-		if(durata < 0)
+		if(idProgetto < 0)
 			return result;
 		try {
-			// --- 3. Apertura della connessione ---  
-			conn = DB2DAOFactory.createConnection(); 
-			// --- 4. Tentativo di accesso al db e impostazione del risultato ---      
+			// --- 3. Apertura della connessione ---   
+			connection = this.dataSource.getConnection();
+			// --- 4. Tentativo di accesso al db e impostazione del risultato ---            
 			// --- a. Crea (se senza parametri) o prepara (se con parametri) lo statement      
-			PreparedStatement statement = conn.prepareStatement(find_progetto_by_durata);
+			statement = connection.prepareStatement(find_work_package_by_idProgetto);
 			// --- b. Pulisci e imposta i parametri (se ve ne sono)
 			statement.clearParameters();
-			statement.setInt(1, durata);
+			statement.setInt(1, idProgetto);
 			// --- c. Esegui l'azione sul database ed estrai il risultato (se atteso)      
 			ResultSet rs = statement.executeQuery();
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			while( rs.next() ) {
-				ProgettoDTO entity = new DB2ProgettoDTOProxy();
-				entity.setIdProgetto(rs.getInt("idProgetto"));
-				entity.setCodiceProgetto(rs.getString("codiceProgetto"));
-				entity.setNomeProgetto(rs.getString("nomeProgetto"));
-				entity.setAnnoInizio(rs.getInt("annoInizio"));
-				entity.setDurata(rs.getInt("durata"));
+				WorkPackage entity = new WorkPackage();
+				entity.setIdWorkPackage(rs.getInt("idWorkPackage"));
+				entity.setNomeWP(rs.getString("nomeWP"));
+				entity.setTitolo(rs.getString("titolo"));
+				entity.setDescrizione(rs.getString("descrizione"));
+				entity.setProgetto(new ProgettoRepository(DataSource.DB2).readByIdProgetto(rs.getInt("IdProgetto")));
 				result.add(entity);
 			}
 			// --- e. Rilascia la struttura dati del risultato      
@@ -568,11 +636,18 @@ public class DB2ProgettoDAO implements ProgettoDAO{
 		}      
 		// --- 5. Gestione di eventuali eccezioni ---      
 		catch (Exception e) {      
-			e.printStackTrace();
+			throw new PersistenceException(e.getMessage());
 		}      
 		// --- 6. Rilascio, SEMPRE E COMUNQUE, la connessione prima di restituire il controllo al chiamante      
-		finally {      
-			DB2DAOFactory.closeConnection(conn);
+		finally {  
+			try {    
+				if (statement != null)
+					statement.close();
+				if (connection!= null)
+					connection.close();
+			}catch (SQLException e) {
+				throw new PersistenceException(e.getMessage());
+			}
 		}      
 		// --- 7. Restituzione del risultato (eventualmente di fallimento)      
 		return result;
