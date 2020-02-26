@@ -11,7 +11,6 @@ import generatore.problema.Attributo;
 import generatore.problema.MappingMetodoQuery;
 import generatore.problema.MetodoFind;
 import generatore.problema.Riferimento;
-import it.unibo.tw.db.DataSource;
 
 public class UtilsJDBC {
 	
