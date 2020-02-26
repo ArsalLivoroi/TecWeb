@@ -1,11 +1,11 @@
-package it.unibo.tw.dao.db2;
+package it.unibo.tw;
 
+import it.unibo.tw.db.*;
 import java.util.*;
 import java.sql.*;
-import it.unibo.tw.dao.*;
 
-public class DB2WorkPackagePartnerMappingDAO implements WorkPackagePartnerMappingDAO{
-	
+public class WorkPackagePartnerMappingRepository{
+	private DataSource dataSource;
 	static final String TABLE = "Partner_WorkPackage_Mapping";
 	// == STATEMENT SQL ====================================================================
 
@@ -24,7 +24,6 @@ public class DB2WorkPackagePartnerMappingDAO implements WorkPackagePartnerMappin
 				"FROM " + TABLE + " " +
 				"WHERE id_partner = ? AND id_workpackage = ?";
 
-
 	// -------------------------------------------------------------------------------------
 
 	// CREATE entrytable ( code INT NOT NULL PRIMARY KEY, ... );
@@ -35,12 +34,11 @@ public class DB2WorkPackagePartnerMappingDAO implements WorkPackagePartnerMappin
 				"id_workpackage INT NOT NULL, "+
 				"FOREING KEY(id_workpackage) REFERENCES work_package(id_workpackage) "+
 				"FOREING KEY(id_partner) REFERENCES partner(id_partner) "+
-				"PRIMARY KEY(idPartner, idWorkPackage) " +
+				"PRIMARY KEY(id_partner, id_workpackage) " +
 			") ";
 
 	static String drop = 
 		"DROP TABLE " + TABLE ;
-		
 		
 	// QUERY ----		
 	static final String find_work_package_by_idPartner = 
@@ -55,30 +53,35 @@ public class DB2WorkPackagePartnerMappingDAO implements WorkPackagePartnerMappin
 			" WHERE Partner_WorkPackage_Mapping.id_partner = partner.id_partner"+
 			" AND id_workpackage = ? ";
 			
+ 
+	public  WorkPackagePartnerMappingRepository(int databaseType) {
+		dataSource = new DataSource(databaseType);
+	} 
+
 	
 	//Create
-	@Override
-	public boolean create(int idPartner, int idWorkPackage) {
+	public boolean create(int idPartner, int idWorkPackage) throws PersistenceException {
 		// --- 1. Dichiarazione della variabile per il risultato ---\r\n" + 
 		boolean result = false;
-		Connection conn = null;
+		PreparedStatement statement = null;
+		Connection connection = null;
 		// --- 2. Controlli preliminari sui dati in ingresso ---      
 		if(idPartner < 0 || idWorkPackage < 0)
 			return result;
 		try {
-			// --- 3. Apertura della connessione ---  
-			conn = DB2DAOFactory.createConnection(); 
-			//if (conn.getMetaData().supportsTransactions()) // se si vuole verificare e gestire il supporto alle transazioni
-			conn.setAutoCommit(false); // start transaction block
-			// --- 4. Tentativo di accesso al db e impostazione del risultato ---      
+			// --- 3. Apertura della connessione ---   
+			connection = this.dataSource.getConnection();
+			//if (connection.getMetaData().supportsTransactions()) // se si vuole verificare e gestire il supporto alle transazioni
+			connection.setAutoCommit(false); // start transaction block
+			// --- 4. Tentativo di accesso al db e impostazione del risultato ---            
 			// --- a. Crea (se senza parametri) o prepara (se con parametri) lo statement      
-			PreparedStatement statement = conn.prepareStatement(insert);
+			statement = connection.prepareStatement(insert);
 			// --- b. Pulisci e imposta i parametri (se ve ne sono)
 			statement.setInt(1,idPartner);
 			statement.setInt(2,idWorkPackage);
 			// --- c. Esegui l'azione sul database ed estrai il risultato (se atteso)      
 			statement.executeUpdate();
-			conn.commit(); //esegui transazione
+			connection.commit(); //esegui transazione
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			result = true;
 			// --- e. Rilascia la struttura dati del risultato      
@@ -87,19 +90,27 @@ public class DB2WorkPackagePartnerMappingDAO implements WorkPackagePartnerMappin
 		}      
 		// --- 5. Gestione di eventuali eccezioni ---      
 		catch (Exception e) {      
-			if (conn != null) {
+			if (connection != null) {
 				try {
 					System.err.print("Transaction is being rolled back");
-					conn.rollback();
+					connection.rollback();
 				} catch(SQLException excep) {
-					excep.printStackTrace();
+					throw new PersistenceException(excep.getMessage());
 				}
 			}
-			e.printStackTrace();
+			throw new PersistenceException(e.getMessage());
 		}      
 		// --- 6. Rilascio, SEMPRE E COMUNQUE, la connessione prima di restituire il controllo al chiamante      
-		finally {      
-			DB2DAOFactory.closeConnection(conn);
+		finally {  
+			try {    
+				if (statement != null)
+					statement.close();
+				if (connection!= null)
+					connection.close();
+				connection.setAutoCommit(true); //una buona prassi è ripristinare l'auto-commit
+			}catch (SQLException e) {
+				throw new PersistenceException(e.getMessage());
+			}
 		}      
 		// --- 7. Restituzione del risultato (eventualmente di fallimento)      
 		return result;
@@ -109,20 +120,20 @@ public class DB2WorkPackagePartnerMappingDAO implements WorkPackagePartnerMappin
 
 	
 	//Delete By
-	@Override
-	public boolean deleteByIdPartnerIdWorkPackage(int idPartner, int idWorkPackage) {
+	public boolean deleteByIdPartnerIdWorkPackage(int idPartner, int idWorkPackage) throws PersistenceException {
 		// --- 1. Dichiarazione della variabile per il risultato ---\r\n" + 
 		boolean result = false;
-		Connection conn = null;
+		PreparedStatement statement = null;
+		Connection connection = null;
 		// --- 2. Controlli preliminari sui dati in ingresso ---      
 		if(idPartner < 0 || idWorkPackage < 0)
 			return result;
 		try {
-			// --- 3. Apertura della connessione ---  
-			conn = DB2DAOFactory.createConnection(); 
-			// --- 4. Tentativo di accesso al db e impostazione del risultato ---      
+			// --- 3. Apertura della connessione ---   
+			connection = this.dataSource.getConnection();
+			// --- 4. Tentativo di accesso al db e impostazione del risultato ---            
 			// --- a. Crea (se senza parametri) o prepara (se con parametri) lo statement      
-			PreparedStatement statement = conn.prepareStatement(delete_by_idPartner_idWorkPackage);
+			statement = connection.prepareStatement(delete_by_idPartner_idWorkPackage);
 			// --- b. Pulisci e imposta i parametri (se ve ne sono)
 			statement.clearParameters();
 			statement.setInt(1,idPartner);
@@ -137,11 +148,18 @@ public class DB2WorkPackagePartnerMappingDAO implements WorkPackagePartnerMappin
 		}      
 		// --- 5. Gestione di eventuali eccezioni ---      
 		catch (Exception e) {      
-			e.printStackTrace();
+			throw new PersistenceException(e.getMessage());
 		}      
 		// --- 6. Rilascio, SEMPRE E COMUNQUE, la connessione prima di restituire il controllo al chiamante      
-		finally {      
-			DB2DAOFactory.closeConnection(conn);
+		finally {  
+			try {    
+				if (statement != null)
+					statement.close();
+				if (connection!= null)
+					connection.close();
+			}catch (SQLException e) {
+				throw new PersistenceException(e.getMessage());
+			}
 		}      
 		// --- 7. Restituzione del risultato (eventualmente di fallimento)      
 		return result;
@@ -149,34 +167,41 @@ public class DB2WorkPackagePartnerMappingDAO implements WorkPackagePartnerMappin
 	
 
 	//Create Table
-	@Override
-	public boolean createTable() {
+	public boolean createTable() throws PersistenceException {
 		// --- 1. Dichiarazione della variabile per il risultato ---\r\n" + 
 		boolean result = false;
-		Connection conn = null;
+		Connection connection = null;
+		Statement statement = null;
 		// --- 2. Controlli preliminari sui dati in ingresso ---      
 		try {
-			// --- 3. Apertura della connessione ---  
-			conn = DB2DAOFactory.createConnection(); 
-			// --- 4. Tentativo di accesso al db e impostazione del risultato ---      
+			// --- 3. Apertura della connessione ---   
+			connection = this.dataSource.getConnection();
+			// --- 4. Tentativo di accesso al db e impostazione del risultato ---            
 			// --- a. Crea (se senza parametri) o prepara (se con parametri) lo statement      
-			Statement stmt = conn.createStatement();
+			statement = connection.createStatement();
 			// --- b. Pulisci e imposta i parametri (se ve ne sono)
 			// --- c. Esegui l'azione sul database ed estrai il risultato (se atteso)      
-			stmt.execute(create);
+			statement.execute(create);
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			result = true;
 			// --- e. Rilascia la struttura dati del risultato      
 			// --- f. Rilascia la struttura dati dello statement      
-			stmt.close();
+			statement.close();
 		}      
 		// --- 5. Gestione di eventuali eccezioni ---      
 		catch (Exception e) {      
-			e.printStackTrace();
+			throw new PersistenceException(e.getMessage());
 		}      
 		// --- 6. Rilascio, SEMPRE E COMUNQUE, la connessione prima di restituire il controllo al chiamante      
-		finally {      
-			DB2DAOFactory.closeConnection(conn);
+		finally {  
+			try {    
+				if (statement != null)
+					statement.close();
+				if (connection!= null)
+					connection.close();
+			}catch (SQLException e) {
+				throw new PersistenceException(e.getMessage());
+			}
 		}      
 		// --- 7. Restituzione del risultato (eventualmente di fallimento)      
 		return result;
@@ -184,34 +209,41 @@ public class DB2WorkPackagePartnerMappingDAO implements WorkPackagePartnerMappin
 	
 
 	//Drop Table
-	@Override
-	public boolean drop() {
+	public boolean drop() throws PersistenceException {
 		// --- 1. Dichiarazione della variabile per il risultato ---\r\n" + 
 		boolean result = false;
-		Connection conn = null;
+		Connection connection = null;
+		Statement statement = null;
 		// --- 2. Controlli preliminari sui dati in ingresso ---      
 		try {
-			// --- 3. Apertura della connessione ---  
-			conn = DB2DAOFactory.createConnection(); 
-			// --- 4. Tentativo di accesso al db e impostazione del risultato ---      
+			// --- 3. Apertura della connessione ---   
+			connection = this.dataSource.getConnection();
+			// --- 4. Tentativo di accesso al db e impostazione del risultato ---            
 			// --- a. Crea (se senza parametri) o prepara (se con parametri) lo statement      
-			Statement stmt = conn.createStatement();
+			statement = connection.createStatement();
 			// --- b. Pulisci e imposta i parametri (se ve ne sono)
 			// --- c. Esegui l'azione sul database ed estrai il risultato (se atteso)      
-			stmt.execute(drop);
+			statement.execute(drop);
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			result = true;
 			// --- e. Rilascia la struttura dati del risultato      
 			// --- f. Rilascia la struttura dati dello statement      
-			stmt.close();
+			statement.close();
 		}      
 		// --- 5. Gestione di eventuali eccezioni ---      
 		catch (Exception e) {      
-			e.printStackTrace();
+			throw new PersistenceException(e.getMessage());
 		}      
 		// --- 6. Rilascio, SEMPRE E COMUNQUE, la connessione prima di restituire il controllo al chiamante      
-		finally {      
-			DB2DAOFactory.closeConnection(conn);
+		finally {  
+			try {    
+				if (statement != null)
+					statement.close();
+				if (connection!= null)
+					connection.close();
+			}catch (SQLException e) {
+				throw new PersistenceException(e.getMessage());
+			}
 		}      
 		// --- 7. Restituzione del risultato (eventualmente di fallimento)      
 		return result;
@@ -219,20 +251,20 @@ public class DB2WorkPackagePartnerMappingDAO implements WorkPackagePartnerMappin
 	
 
 	//Find By
-	@Override
-	public Set<WorkPackageDTO> findWorkPackagesByIdPartner(int idPartner) {
+	public Set<WorkPackage> findWorkPackagesByIdPartner(int idPartner) throws PersistenceException {
 		// --- 1. Dichiarazione della variabile per il risultato ---\r\n" + 
-		Set<WorkPackageDTO> result = new HashSet<WorkPackageDTO>();
-		Connection conn = null;
+		Set<WorkPackage> result = new HashSet<WorkPackage>();
+		PreparedStatement statement = null;
+		Connection connection = null;
 		// --- 2. Controlli preliminari sui dati in ingresso ---      
 		if(idPartner < 0)
 			return result;
 		try {
-			// --- 3. Apertura della connessione ---  
-			conn = DB2DAOFactory.createConnection(); 
-			// --- 4. Tentativo di accesso al db e impostazione del risultato ---      
+			// --- 3. Apertura della connessione ---   
+			connection = this.dataSource.getConnection();
+			// --- 4. Tentativo di accesso al db e impostazione del risultato ---            
 			// --- a. Crea (se senza parametri) o prepara (se con parametri) lo statement      
-			PreparedStatement statement = conn.prepareStatement(find_work_package_by_idPartner);
+			statement = connection.prepareStatement(find_work_package_by_idPartner);
 			// --- b. Pulisci e imposta i parametri (se ve ne sono)
 			statement.clearParameters();
 			statement.setInt(1, idPartner);
@@ -240,11 +272,12 @@ public class DB2WorkPackagePartnerMappingDAO implements WorkPackagePartnerMappin
 			ResultSet rs = statement.executeQuery();
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			while( rs.next() ) {
-				WorkPackageDTO entity = new DB2WorkPackageDTOProxy();
+				WorkPackage entity = new WorkPackage();
 				entity.setIdWorkPackage(rs.getInt("idWorkPackage"));
 				entity.setNomeWP(rs.getString("nomeWP"));
 				entity.setTitolo(rs.getString("titolo"));
 				entity.setDescrizione(rs.getString("descrizione"));
+				entity.setProgetto(new ProgettoRepository(DataSource.DB2).readByIdProgetto(rs.getInt("IdProgetto")));
 				result.add(entity);
 			}
 			// --- e. Rilascia la struttura dati del risultato      
@@ -254,30 +287,37 @@ public class DB2WorkPackagePartnerMappingDAO implements WorkPackagePartnerMappin
 		}      
 		// --- 5. Gestione di eventuali eccezioni ---      
 		catch (Exception e) {      
-			e.printStackTrace();
+			throw new PersistenceException(e.getMessage());
 		}      
 		// --- 6. Rilascio, SEMPRE E COMUNQUE, la connessione prima di restituire il controllo al chiamante      
-		finally {      
-			DB2DAOFactory.closeConnection(conn);
+		finally {  
+			try {    
+				if (statement != null)
+					statement.close();
+				if (connection!= null)
+					connection.close();
+			}catch (SQLException e) {
+				throw new PersistenceException(e.getMessage());
+			}
 		}      
 		// --- 7. Restituzione del risultato (eventualmente di fallimento)      
 		return result;
 	}
 	
-	@Override
-	public Set<PartnerDTO> findPartnersByIdWorkPackage(int idWorkPackage) {
+	public Set<Partner> findPartnersByIdWorkPackage(int idWorkPackage) throws PersistenceException {
 		// --- 1. Dichiarazione della variabile per il risultato ---\r\n" + 
-		Set<PartnerDTO> result = new HashSet<PartnerDTO>();
-		Connection conn = null;
+		Set<Partner> result = new HashSet<Partner>();
+		PreparedStatement statement = null;
+		Connection connection = null;
 		// --- 2. Controlli preliminari sui dati in ingresso ---      
 		if(idWorkPackage < 0)
 			return result;
 		try {
-			// --- 3. Apertura della connessione ---  
-			conn = DB2DAOFactory.createConnection(); 
-			// --- 4. Tentativo di accesso al db e impostazione del risultato ---      
+			// --- 3. Apertura della connessione ---   
+			connection = this.dataSource.getConnection();
+			// --- 4. Tentativo di accesso al db e impostazione del risultato ---            
 			// --- a. Crea (se senza parametri) o prepara (se con parametri) lo statement      
-			PreparedStatement statement = conn.prepareStatement(find_partner_by_idWorkPackage);
+			statement = connection.prepareStatement(find_partner_by_idWorkPackage);
 			// --- b. Pulisci e imposta i parametri (se ve ne sono)
 			statement.clearParameters();
 			statement.setInt(1, idWorkPackage);
@@ -285,7 +325,7 @@ public class DB2WorkPackagePartnerMappingDAO implements WorkPackagePartnerMappin
 			ResultSet rs = statement.executeQuery();
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			while( rs.next() ) {
-				PartnerDTO entity = new DB2PartnerDTOProxy();
+				Partner entity = new Partner();
 				entity.setIdPartner(rs.getInt("idPartner"));
 				entity.setSiglaPartner(rs.getString("siglaPartner"));
 				entity.setNome(rs.getString("nome"));
@@ -298,11 +338,18 @@ public class DB2WorkPackagePartnerMappingDAO implements WorkPackagePartnerMappin
 		}      
 		// --- 5. Gestione di eventuali eccezioni ---      
 		catch (Exception e) {      
-			e.printStackTrace();
+			throw new PersistenceException(e.getMessage());
 		}      
 		// --- 6. Rilascio, SEMPRE E COMUNQUE, la connessione prima di restituire il controllo al chiamante      
-		finally {      
-			DB2DAOFactory.closeConnection(conn);
+		finally {  
+			try {    
+				if (statement != null)
+					statement.close();
+				if (connection!= null)
+					connection.close();
+			}catch (SQLException e) {
+				throw new PersistenceException(e.getMessage());
+			}
 		}      
 		// --- 7. Restituzione del risultato (eventualmente di fallimento)      
 		return result;

@@ -1,11 +1,11 @@
-package it.unibo.tw.dao.db2;
+package it.unibo.tw;
 
+import it.unibo.tw.db.*;
 import java.util.*;
 import java.sql.*;
-import it.unibo.tw.dao.*;
 
-public class DB2PartnerDAO implements PartnerDAO{
-	
+public class PartnerRepository{
+	private DataSource dataSource;
 	static final String TABLE = "partner";
 	// == STATEMENT SQL ====================================================================
 
@@ -52,7 +52,6 @@ public class DB2PartnerDAO implements PartnerDAO{
 				"FROM " + TABLE + " " +
 				"WHERE sigla_partner = ?";
 				
-
 	// -------------------------------------------------------------------------------------
 
 	// CREATE entrytable ( code INT NOT NULL PRIMARY KEY, ... );
@@ -63,12 +62,11 @@ public class DB2PartnerDAO implements PartnerDAO{
 				"sigla_partner VARCHAR(100) NOT NULL, "+
 				"nome VARCHAR(100) NOT NULL, "+
 				"UNIQUE(sigla_partner), "+
-				"PRIMARY KEY(idPartner) " +
+				"PRIMARY KEY(id_partner) " +
 			") ";
 
 	static String drop = 
 		"DROP TABLE " + TABLE ;
-		
 		
 	// QUERY ----		
 	static final String find_partner_by_nome = 
@@ -76,31 +74,36 @@ public class DB2PartnerDAO implements PartnerDAO{
 			" FROM "+ TABLE + 
 			" WHERE nome = ? ";
 			
+ 
+	public  PartnerRepository(int databaseType) {
+		dataSource = new DataSource(databaseType);
+	} 
+
 	
 	//Create
-	@Override
-	public boolean create(PartnerDTO partner) {
+	public boolean create(Partner partner) throws PersistenceException {
 		// --- 1. Dichiarazione della variabile per il risultato ---\r\n" + 
 		boolean result = false;
-		Connection conn = null;
+		PreparedStatement statement = null;
+		Connection connection = null;
 		// --- 2. Controlli preliminari sui dati in ingresso ---      
 		if(partner == null)
 			return result;
 		try {
-			// --- 3. Apertura della connessione ---  
-			conn = DB2DAOFactory.createConnection(); 
-			//if (conn.getMetaData().supportsTransactions()) // se si vuole verificare e gestire il supporto alle transazioni
-			conn.setAutoCommit(false); // start transaction block
-			// --- 4. Tentativo di accesso al db e impostazione del risultato ---      
+			// --- 3. Apertura della connessione ---   
+			connection = this.dataSource.getConnection();
+			//if (connection.getMetaData().supportsTransactions()) // se si vuole verificare e gestire il supporto alle transazioni
+			connection.setAutoCommit(false); // start transaction block
+			// --- 4. Tentativo di accesso al db e impostazione del risultato ---            
 			// --- a. Crea (se senza parametri) o prepara (se con parametri) lo statement      
-			PreparedStatement statement = conn.prepareStatement(insert);
+			statement = connection.prepareStatement(insert);
 			// --- b. Pulisci e imposta i parametri (se ve ne sono)
 			statement.setInt(1,partner.getIdPartner());
 			statement.setString(2,partner.getSiglaPartner());
 			statement.setString(3,partner.getNome());
 			// --- c. Esegui l'azione sul database ed estrai il risultato (se atteso)      
 			statement.executeUpdate();
-			conn.commit(); //esegui transazione
+			connection.commit(); //esegui transazione
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			result = true;
 			// --- e. Rilascia la struttura dati del risultato      
@@ -109,19 +112,27 @@ public class DB2PartnerDAO implements PartnerDAO{
 		}      
 		// --- 5. Gestione di eventuali eccezioni ---      
 		catch (Exception e) {      
-			if (conn != null) {
+			if (connection != null) {
 				try {
 					System.err.print("Transaction is being rolled back");
-					conn.rollback();
+					connection.rollback();
 				} catch(SQLException excep) {
-					excep.printStackTrace();
+					throw new PersistenceException(excep.getMessage());
 				}
 			}
-			e.printStackTrace();
+			throw new PersistenceException(e.getMessage());
 		}      
 		// --- 6. Rilascio, SEMPRE E COMUNQUE, la connessione prima di restituire il controllo al chiamante      
-		finally {      
-			DB2DAOFactory.closeConnection(conn);
+		finally {  
+			try {    
+				if (statement != null)
+					statement.close();
+				if (connection!= null)
+					connection.close();
+				connection.setAutoCommit(true); //una buona prassi è ripristinare l'auto-commit
+			}catch (SQLException e) {
+				throw new PersistenceException(e.getMessage());
+			}
 		}      
 		// --- 7. Restituzione del risultato (eventualmente di fallimento)      
 		return result;
@@ -129,20 +140,20 @@ public class DB2PartnerDAO implements PartnerDAO{
 	
 	
 	//Read By
-	@Override
-	public PartnerDTO readByIdPartner(int idPartner) {
+	public Partner readByIdPartner(int idPartner) throws PersistenceException {
 		// --- 1. Dichiarazione della variabile per il risultato ---\r\n" + 
-		PartnerDTO result = null;
-		Connection conn = null;
+		Partner result = null;
+		PreparedStatement statement = null;
+		Connection connection = null;
 		// --- 2. Controlli preliminari sui dati in ingresso ---      
 		if(idPartner < 0)
 			return result;
 		try {
-			// --- 3. Apertura della connessione ---  
-			conn = DB2DAOFactory.createConnection(); 
-			// --- 4. Tentativo di accesso al db e impostazione del risultato ---      
+			// --- 3. Apertura della connessione ---   
+			connection = this.dataSource.getConnection();
+			// --- 4. Tentativo di accesso al db e impostazione del risultato ---            
 			// --- a. Crea (se senza parametri) o prepara (se con parametri) lo statement      
-			PreparedStatement statement = conn.prepareStatement(read_by_idPartner);
+			statement = connection.prepareStatement(read_by_idPartner);
 			// --- b. Pulisci e imposta i parametri (se ve ne sono)
 			statement.clearParameters();
 			statement.setInt(1,idPartner);
@@ -150,7 +161,7 @@ public class DB2PartnerDAO implements PartnerDAO{
 			ResultSet rs = statement.executeQuery();
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			if ( rs.next() ) {
-				result = new PartnerDTO();
+				result = new Partner();
 				result.setIdPartner(rs.getInt("idPartner"));
 				result.setSiglaPartner(rs.getString("siglaPartner"));
 				result.setNome(rs.getString("nome"));
@@ -162,30 +173,37 @@ public class DB2PartnerDAO implements PartnerDAO{
 		}      
 		// --- 5. Gestione di eventuali eccezioni ---      
 		catch (Exception e) {      
-			e.printStackTrace();
+			throw new PersistenceException(e.getMessage());
 		}      
 		// --- 6. Rilascio, SEMPRE E COMUNQUE, la connessione prima di restituire il controllo al chiamante      
-		finally {      
-			DB2DAOFactory.closeConnection(conn);
+		finally {  
+			try {    
+				if (statement != null)
+					statement.close();
+				if (connection!= null)
+					connection.close();
+			}catch (SQLException e) {
+				throw new PersistenceException(e.getMessage());
+			}
 		}      
 		// --- 7. Restituzione del risultato (eventualmente di fallimento)      
 		return result;
 	}
 	
-	@Override
-	public PartnerDTO readBySiglaPartner(String siglaPartner) {
+	public Partner readBySiglaPartner(String siglaPartner) throws PersistenceException {
 		// --- 1. Dichiarazione della variabile per il risultato ---\r\n" + 
-		PartnerDTO result = null;
-		Connection conn = null;
+		Partner result = null;
+		PreparedStatement statement = null;
+		Connection connection = null;
 		// --- 2. Controlli preliminari sui dati in ingresso ---      
 		if(siglaPartner == null || siglaPartner.isEmpty() )
 			return result;
 		try {
-			// --- 3. Apertura della connessione ---  
-			conn = DB2DAOFactory.createConnection(); 
-			// --- 4. Tentativo di accesso al db e impostazione del risultato ---      
+			// --- 3. Apertura della connessione ---   
+			connection = this.dataSource.getConnection();
+			// --- 4. Tentativo di accesso al db e impostazione del risultato ---            
 			// --- a. Crea (se senza parametri) o prepara (se con parametri) lo statement      
-			PreparedStatement statement = conn.prepareStatement(read_by_siglaPartner);
+			statement = connection.prepareStatement(read_by_siglaPartner);
 			// --- b. Pulisci e imposta i parametri (se ve ne sono)
 			statement.clearParameters();
 			statement.setString(1,siglaPartner);
@@ -193,7 +211,7 @@ public class DB2PartnerDAO implements PartnerDAO{
 			ResultSet rs = statement.executeQuery();
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			if ( rs.next() ) {
-				result = new PartnerDTO();
+				result = new Partner();
 				result.setIdPartner(rs.getInt("idPartner"));
 				result.setSiglaPartner(rs.getString("siglaPartner"));
 				result.setNome(rs.getString("nome"));
@@ -205,11 +223,18 @@ public class DB2PartnerDAO implements PartnerDAO{
 		}      
 		// --- 5. Gestione di eventuali eccezioni ---      
 		catch (Exception e) {      
-			e.printStackTrace();
+			throw new PersistenceException(e.getMessage());
 		}      
 		// --- 6. Rilascio, SEMPRE E COMUNQUE, la connessione prima di restituire il controllo al chiamante      
-		finally {      
-			DB2DAOFactory.closeConnection(conn);
+		finally {  
+			try {    
+				if (statement != null)
+					statement.close();
+				if (connection!= null)
+					connection.close();
+			}catch (SQLException e) {
+				throw new PersistenceException(e.getMessage());
+			}
 		}      
 		// --- 7. Restituzione del risultato (eventualmente di fallimento)      
 		return result;
@@ -217,22 +242,22 @@ public class DB2PartnerDAO implements PartnerDAO{
 	
 
 	//Update
-	@Override
-	public boolean update(PartnerDTO partner) {
+	public boolean update(Partner partner) throws PersistenceException {
 		// --- 1. Dichiarazione della variabile per il risultato ---\r\n" + 
 		boolean result = false;
-		Connection conn = null;
+		PreparedStatement statement = null;
+		Connection connection = null;
 		// --- 2. Controlli preliminari sui dati in ingresso ---      
 		if(partner == null)
 			return result;
 		try {
-			// --- 3. Apertura della connessione ---  
-			conn = DB2DAOFactory.createConnection(); 
-			//if (conn.getMetaData().supportsTransactions()) // se si vuole verificare e gestire il supporto alle transazioni
-			conn.setAutoCommit(false); // start transaction block
-			// --- 4. Tentativo di accesso al db e impostazione del risultato ---      
+			// --- 3. Apertura della connessione ---   
+			connection = this.dataSource.getConnection();
+			//if (connection.getMetaData().supportsTransactions()) // se si desidera verificare e gestire il supporto alle transazioni
+			connection.setAutoCommit(false); // start transaction block
+			// --- 4. Tentativo di accesso al db e impostazione del risultato ---            
 			// --- a. Crea (se senza parametri) o prepara (se con parametri) lo statement      
-			PreparedStatement statement = conn.prepareStatement(update);
+			statement = connection.prepareStatement(update);
 			// --- b. Pulisci e imposta i parametri (se ve ne sono)
 			statement.clearParameters();
 			statement.setInt(1,partner.getIdPartner());
@@ -240,7 +265,7 @@ public class DB2PartnerDAO implements PartnerDAO{
 			statement.setString(3,partner.getNome());
 			// --- c. Esegui l'azione sul database ed estrai il risultato (se atteso)      
 			statement.executeUpdate();
-			conn.commit(); //esegui transazione
+			connection.commit(); //esegui transazione
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			result = true;
 			// --- e. Rilascia la struttura dati del risultato      
@@ -249,19 +274,27 @@ public class DB2PartnerDAO implements PartnerDAO{
 		}      
 		// --- 5. Gestione di eventuali eccezioni ---      
 		catch (Exception e) {      
-			if (conn != null) {
+			if (connection != null) {
 				try {
 					System.err.print("Transaction is being rolled back");
-					conn.rollback();
+					connection.rollback();
 				} catch(SQLException excep) {
-					excep.printStackTrace();
+					throw new PersistenceException(excep.getMessage());
 				}
 			}
-			e.printStackTrace();
+			throw new PersistenceException(e.getMessage());
 		}      
 		// --- 6. Rilascio, SEMPRE E COMUNQUE, la connessione prima di restituire il controllo al chiamante      
-		finally {      
-			DB2DAOFactory.closeConnection(conn);
+		finally {  
+			try {    
+				if (statement != null)
+					statement.close();
+				if (connection!= null)
+					connection.close();
+				connection.setAutoCommit(true); //una buona prassi è ripristinare l'auto-commit
+			}catch (SQLException e) {
+				throw new PersistenceException(e.getMessage());
+			}
 		}      
 		// --- 7. Restituzione del risultato (eventualmente di fallimento)      
 		return result;
@@ -269,20 +302,20 @@ public class DB2PartnerDAO implements PartnerDAO{
 	
 	
 	//Delete By
-	@Override
-	public boolean deleteByIdPartner(int idPartner) {
+	public boolean deleteByIdPartner(int idPartner) throws PersistenceException {
 		// --- 1. Dichiarazione della variabile per il risultato ---\r\n" + 
 		boolean result = false;
-		Connection conn = null;
+		PreparedStatement statement = null;
+		Connection connection = null;
 		// --- 2. Controlli preliminari sui dati in ingresso ---      
 		if(idPartner < 0)
 			return result;
 		try {
-			// --- 3. Apertura della connessione ---  
-			conn = DB2DAOFactory.createConnection(); 
-			// --- 4. Tentativo di accesso al db e impostazione del risultato ---      
+			// --- 3. Apertura della connessione ---   
+			connection = this.dataSource.getConnection();
+			// --- 4. Tentativo di accesso al db e impostazione del risultato ---            
 			// --- a. Crea (se senza parametri) o prepara (se con parametri) lo statement      
-			PreparedStatement statement = conn.prepareStatement(delete_by_idPartner);
+			statement = connection.prepareStatement(delete_by_idPartner);
 			// --- b. Pulisci e imposta i parametri (se ve ne sono)
 			statement.clearParameters();
 			statement.setInt(1,idPartner);
@@ -296,30 +329,37 @@ public class DB2PartnerDAO implements PartnerDAO{
 		}      
 		// --- 5. Gestione di eventuali eccezioni ---      
 		catch (Exception e) {      
-			e.printStackTrace();
+			throw new PersistenceException(e.getMessage());
 		}      
 		// --- 6. Rilascio, SEMPRE E COMUNQUE, la connessione prima di restituire il controllo al chiamante      
-		finally {      
-			DB2DAOFactory.closeConnection(conn);
+		finally {  
+			try {    
+				if (statement != null)
+					statement.close();
+				if (connection!= null)
+					connection.close();
+			}catch (SQLException e) {
+				throw new PersistenceException(e.getMessage());
+			}
 		}      
 		// --- 7. Restituzione del risultato (eventualmente di fallimento)      
 		return result;
 	}
 	
-	@Override
-	public boolean deleteBySiglaPartner(String siglaPartner) {
+	public boolean deleteBySiglaPartner(String siglaPartner) throws PersistenceException {
 		// --- 1. Dichiarazione della variabile per il risultato ---\r\n" + 
 		boolean result = false;
-		Connection conn = null;
+		PreparedStatement statement = null;
+		Connection connection = null;
 		// --- 2. Controlli preliminari sui dati in ingresso ---      
 		if(siglaPartner == null || siglaPartner.isEmpty() )
 			return result;
 		try {
-			// --- 3. Apertura della connessione ---  
-			conn = DB2DAOFactory.createConnection(); 
-			// --- 4. Tentativo di accesso al db e impostazione del risultato ---      
+			// --- 3. Apertura della connessione ---   
+			connection = this.dataSource.getConnection();
+			// --- 4. Tentativo di accesso al db e impostazione del risultato ---            
 			// --- a. Crea (se senza parametri) o prepara (se con parametri) lo statement      
-			PreparedStatement statement = conn.prepareStatement(delete_by_siglaPartner);
+			statement = connection.prepareStatement(delete_by_siglaPartner);
 			// --- b. Pulisci e imposta i parametri (se ve ne sono)
 			statement.clearParameters();
 			statement.setString(1,siglaPartner);
@@ -333,11 +373,18 @@ public class DB2PartnerDAO implements PartnerDAO{
 		}      
 		// --- 5. Gestione di eventuali eccezioni ---      
 		catch (Exception e) {      
-			e.printStackTrace();
+			throw new PersistenceException(e.getMessage());
 		}      
 		// --- 6. Rilascio, SEMPRE E COMUNQUE, la connessione prima di restituire il controllo al chiamante      
-		finally {      
-			DB2DAOFactory.closeConnection(conn);
+		finally {  
+			try {    
+				if (statement != null)
+					statement.close();
+				if (connection!= null)
+					connection.close();
+			}catch (SQLException e) {
+				throw new PersistenceException(e.getMessage());
+			}
 		}      
 		// --- 7. Restituzione del risultato (eventualmente di fallimento)      
 		return result;
@@ -345,34 +392,41 @@ public class DB2PartnerDAO implements PartnerDAO{
 	
 
 	//Create Table
-	@Override
-	public boolean createTable() {
+	public boolean createTable() throws PersistenceException {
 		// --- 1. Dichiarazione della variabile per il risultato ---\r\n" + 
 		boolean result = false;
-		Connection conn = null;
+		Connection connection = null;
+		Statement statement = null;
 		// --- 2. Controlli preliminari sui dati in ingresso ---      
 		try {
-			// --- 3. Apertura della connessione ---  
-			conn = DB2DAOFactory.createConnection(); 
-			// --- 4. Tentativo di accesso al db e impostazione del risultato ---      
+			// --- 3. Apertura della connessione ---   
+			connection = this.dataSource.getConnection();
+			// --- 4. Tentativo di accesso al db e impostazione del risultato ---            
 			// --- a. Crea (se senza parametri) o prepara (se con parametri) lo statement      
-			Statement stmt = conn.createStatement();
+			statement = connection.createStatement();
 			// --- b. Pulisci e imposta i parametri (se ve ne sono)
 			// --- c. Esegui l'azione sul database ed estrai il risultato (se atteso)      
-			stmt.execute(create);
+			statement.execute(create);
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			result = true;
 			// --- e. Rilascia la struttura dati del risultato      
 			// --- f. Rilascia la struttura dati dello statement      
-			stmt.close();
+			statement.close();
 		}      
 		// --- 5. Gestione di eventuali eccezioni ---      
 		catch (Exception e) {      
-			e.printStackTrace();
+			throw new PersistenceException(e.getMessage());
 		}      
 		// --- 6. Rilascio, SEMPRE E COMUNQUE, la connessione prima di restituire il controllo al chiamante      
-		finally {      
-			DB2DAOFactory.closeConnection(conn);
+		finally {  
+			try {    
+				if (statement != null)
+					statement.close();
+				if (connection!= null)
+					connection.close();
+			}catch (SQLException e) {
+				throw new PersistenceException(e.getMessage());
+			}
 		}      
 		// --- 7. Restituzione del risultato (eventualmente di fallimento)      
 		return result;
@@ -380,34 +434,41 @@ public class DB2PartnerDAO implements PartnerDAO{
 	
 
 	//Drop Table
-	@Override
-	public boolean drop() {
+	public boolean drop() throws PersistenceException {
 		// --- 1. Dichiarazione della variabile per il risultato ---\r\n" + 
 		boolean result = false;
-		Connection conn = null;
+		Connection connection = null;
+		Statement statement = null;
 		// --- 2. Controlli preliminari sui dati in ingresso ---      
 		try {
-			// --- 3. Apertura della connessione ---  
-			conn = DB2DAOFactory.createConnection(); 
-			// --- 4. Tentativo di accesso al db e impostazione del risultato ---      
+			// --- 3. Apertura della connessione ---   
+			connection = this.dataSource.getConnection();
+			// --- 4. Tentativo di accesso al db e impostazione del risultato ---            
 			// --- a. Crea (se senza parametri) o prepara (se con parametri) lo statement      
-			Statement stmt = conn.createStatement();
+			statement = connection.createStatement();
 			// --- b. Pulisci e imposta i parametri (se ve ne sono)
 			// --- c. Esegui l'azione sul database ed estrai il risultato (se atteso)      
-			stmt.execute(drop);
+			statement.execute(drop);
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			result = true;
 			// --- e. Rilascia la struttura dati del risultato      
 			// --- f. Rilascia la struttura dati dello statement      
-			stmt.close();
+			statement.close();
 		}      
 		// --- 5. Gestione di eventuali eccezioni ---      
 		catch (Exception e) {      
-			e.printStackTrace();
+			throw new PersistenceException(e.getMessage());
 		}      
 		// --- 6. Rilascio, SEMPRE E COMUNQUE, la connessione prima di restituire il controllo al chiamante      
-		finally {      
-			DB2DAOFactory.closeConnection(conn);
+		finally {  
+			try {    
+				if (statement != null)
+					statement.close();
+				if (connection!= null)
+					connection.close();
+			}catch (SQLException e) {
+				throw new PersistenceException(e.getMessage());
+			}
 		}      
 		// --- 7. Restituzione del risultato (eventualmente di fallimento)      
 		return result;
@@ -415,20 +476,20 @@ public class DB2PartnerDAO implements PartnerDAO{
 	
 
 	//Find By
-	@Override
-	public Set<PartnerDTO> findPartnersByNome(String nome) {
+	public Set<Partner> findPartnersByNome(String nome) throws PersistenceException {
 		// --- 1. Dichiarazione della variabile per il risultato ---\r\n" + 
-		Set<PartnerDTO> result = new HashSet<PartnerDTO>();
-		Connection conn = null;
+		Set<Partner> result = new HashSet<Partner>();
+		PreparedStatement statement = null;
+		Connection connection = null;
 		// --- 2. Controlli preliminari sui dati in ingresso ---      
 		if(nome == null || nome.isEmpty() )
 			return result;
 		try {
-			// --- 3. Apertura della connessione ---  
-			conn = DB2DAOFactory.createConnection(); 
-			// --- 4. Tentativo di accesso al db e impostazione del risultato ---      
+			// --- 3. Apertura della connessione ---   
+			connection = this.dataSource.getConnection();
+			// --- 4. Tentativo di accesso al db e impostazione del risultato ---            
 			// --- a. Crea (se senza parametri) o prepara (se con parametri) lo statement      
-			PreparedStatement statement = conn.prepareStatement(find_partner_by_nome);
+			statement = connection.prepareStatement(find_partner_by_nome);
 			// --- b. Pulisci e imposta i parametri (se ve ne sono)
 			statement.clearParameters();
 			statement.setString(1, nome);
@@ -436,7 +497,7 @@ public class DB2PartnerDAO implements PartnerDAO{
 			ResultSet rs = statement.executeQuery();
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			while( rs.next() ) {
-				PartnerDTO entity = new DB2PartnerDTOProxy();
+				Partner entity = new Partner();
 				entity.setIdPartner(rs.getInt("idPartner"));
 				entity.setSiglaPartner(rs.getString("siglaPartner"));
 				entity.setNome(rs.getString("nome"));
@@ -449,11 +510,18 @@ public class DB2PartnerDAO implements PartnerDAO{
 		}      
 		// --- 5. Gestione di eventuali eccezioni ---      
 		catch (Exception e) {      
-			e.printStackTrace();
+			throw new PersistenceException(e.getMessage());
 		}      
 		// --- 6. Rilascio, SEMPRE E COMUNQUE, la connessione prima di restituire il controllo al chiamante      
-		finally {      
-			DB2DAOFactory.closeConnection(conn);
+		finally {  
+			try {    
+				if (statement != null)
+					statement.close();
+				if (connection!= null)
+					connection.close();
+			}catch (SQLException e) {
+				throw new PersistenceException(e.getMessage());
+			}
 		}      
 		// --- 7. Restituzione del risultato (eventualmente di fallimento)      
 		return result;

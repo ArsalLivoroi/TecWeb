@@ -1,9 +1,9 @@
-package it.unibo.tw.dao;
+package it.unibo.tw;
 
 import java.io.Serializable;
 import java.util.*;
 
-public class PartnerDTO implements Serializable{
+public class Partner implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 
@@ -12,17 +12,15 @@ public class PartnerDTO implements Serializable{
 	private String nome;
 
 
-	private Set<WorkPackageDTO> workPackages; 
-	private boolean listaWorkPackagesIsAlreadyLoaded;
+	private Set<WorkPackage> workPackages; 
 	
 	// --- costruttore ----------
 
-	public PartnerDTO(){
-		this.workPackages = new HashSet<WorkPackageDTO>();
-		this.listaWorkPackagesIsAlreadyLoaded=false;
+	public Partner(){
+		this.workPackages = new HashSet<WorkPackage>();
 	}
 
-	public PartnerDTO(int idPartner, String siglaPartner, String nome){
+	public Partner(int idPartner, String siglaPartner, String nome){
 		this();
 		this.idPartner = idPartner;
 		this.siglaPartner = siglaPartner;
@@ -50,17 +48,11 @@ public class PartnerDTO implements Serializable{
 		this.nome = nome;
 	}
 
-	public Set<WorkPackageDTO> getWorkPackages(){
+	public Set<WorkPackage> getWorkPackages(){
 		return workPackages;
 	}
-	public void setWorkPackages(Set<WorkPackageDTO> workPackages){
+	public void setWorkPackages(Set<WorkPackage> workPackages){
 		this.workPackages = workPackages;
-	}
-	public boolean listaWorkPackagesIsAlreadyLoaded(){
-		return this.listaWorkPackagesIsAlreadyLoaded;
-	}
-	public void listaWorkPackagesIsAlreadyLoaded(boolean loaded){
-		this.listaWorkPackagesIsAlreadyLoaded = loaded;
 	}
 
 	// --- utilities ----------------------------
@@ -73,7 +65,7 @@ public class PartnerDTO implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		PartnerDTO other = (PartnerDTO) obj;
+		Partner other = (Partner) obj;
 		if (this.idPartner != other.idPartner)
 			return false;
 		return true;
