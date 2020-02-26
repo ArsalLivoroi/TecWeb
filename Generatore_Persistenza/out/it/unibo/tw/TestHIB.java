@@ -2,60 +2,73 @@ package it.unibo.tw;
 
 import java.util.*;
 import java.io.*;
-import it.unibo.tw.db.*;
+import java.sql.*;
 
-public class JDBCTest {
+public class TestHIB {
 	
 	static PrintWriter pw=null;
 	
-	private static WorkPackageRepository workPackageRepository;	
-	private static WorkPackagePartnerMappingRepository workPackagePartnerMappingRepository;	
-	private static ProgettoRepository progettoRepository;	
-	private static PartnerRepository partnerRepository;	
+	private static WorkPackageManager workPackageManager;	
+	private static ProgettoManager progettoManager;	
+	private static PartnerManager partnerManager;	
 	
 	public static void main(String[] args) {
+
+		Class.forName("com.ibm.db2.jcc.DB2Driver");
+		String url = "jdbc:db2://diva.deis.unibo.it:50000/tw_stud";
+		
+		String username = "INSERISCI_MATRICOLA_FORMATO_00123456";
+		String password = "INSERISCI_QUI_LA_TUA_PASSWORD_DI_DB2";
+		Connection conn = DriverManager.getConnection(url, username, password);
+		
 		
 		// WorkPackage
-		workPackageRepository = new WorkPackageRepository(DataSource.DB2);
-		workPackageRepository.drop();
-		workPackageRepository.createTable();
+		workPackageManager = new WorkPackageManager(conn);
+		workPackageManager.drop();
+		workPackageManager.createTable();
 		
 		WorkPackage workPackage;
+		Set<WorkPackage> workPackages = new HashSet<WorkPackage>();
 		workPackage = new WorkPackage();
 		workPackage.setIdWorkPackage(1);
 		workPackage.setNomeWP("nomeWP_1");
 		workPackage.setTitolo("titolo_1");
 		workPackage.setDescrizione("descrizione_1");
-		workPackageRepository.create(workPackage);
+		workPackageManager.insert(workPackage);
+		workPackages.add(workPackage);
 		
 		workPackage = new WorkPackage();
 		workPackage.setIdWorkPackage(2);
 		workPackage.setNomeWP("nomeWP_2");
 		workPackage.setTitolo("titolo_2");
 		workPackage.setDescrizione("descrizione_2");
-		workPackageRepository.create(workPackage);
+		workPackageManager.insert(workPackage);
+		workPackages.add(workPackage);
 		
 		workPackage = new WorkPackage();
 		workPackage.setIdWorkPackage(3);
 		workPackage.setNomeWP("nomeWP_3");
 		workPackage.setTitolo("titolo_3");
 		workPackage.setDescrizione("descrizione_3");
-		workPackageRepository.create(workPackage);
+		workPackageManager.insert(workPackage);
+		workPackages.add(workPackage);
 		
 		
 		// Progetto
-		progettoRepository = new ProgettoRepository(DataSource.DB2);
-		progettoRepository.drop();
-		progettoRepository.createTable();
+		progettoManager = new ProgettoManager(conn);
+		progettoManager.drop();
+		progettoManager.createTable();
 		
 		Progetto progetto;
+		Set<Progetto> progetti = new HashSet<Progetto>();
 		progetto = new Progetto();
 		progetto.setIdProgetto(1);
 		progetto.setCodiceProgetto("codiceProgetto_1");
 		progetto.setNomeProgetto("nomeProgetto_1");
 		progetto.setAnnoInizio(1);
 		progetto.setDurata(1);
-		progettoRepository.create(progetto);
+		progettoManager.insert(progetto);
+		progetti.add(progetto);
 		
 		progetto = new Progetto();
 		progetto.setIdProgetto(2);
@@ -63,7 +76,8 @@ public class JDBCTest {
 		progetto.setNomeProgetto("nomeProgetto_2");
 		progetto.setAnnoInizio(2);
 		progetto.setDurata(2);
-		progettoRepository.create(progetto);
+		progettoManager.insert(progetto);
+		progetti.add(progetto);
 		
 		progetto = new Progetto();
 		progetto.setIdProgetto(3);
@@ -71,49 +85,52 @@ public class JDBCTest {
 		progetto.setNomeProgetto("nomeProgetto_3");
 		progetto.setAnnoInizio(3);
 		progetto.setDurata(3);
-		progettoRepository.create(progetto);
+		progettoManager.insert(progetto);
+		progetti.add(progetto);
 		
 		
 		// Partner
-		partnerRepository = new PartnerRepository(DataSource.DB2);
-		partnerRepository.drop();
-		partnerRepository.createTable();
+		partnerManager = new PartnerManager(conn);
+		partnerManager.drop();
+		partnerManager.createTable();
 		
 		Partner partner;
+		Set<Partner> partners = new HashSet<Partner>();
 		partner = new Partner();
 		partner.setIdPartner(1);
 		partner.setSiglaPartner("siglaPartner_1");
 		partner.setNome("nome_1");
-		partnerRepository.create(partner);
+		partnerManager.insert(partner);
+		partners.add(partner);
 		
 		partner = new Partner();
 		partner.setIdPartner(2);
 		partner.setSiglaPartner("siglaPartner_2");
 		partner.setNome("nome_2");
-		partnerRepository.create(partner);
+		partnerManager.insert(partner);
+		partners.add(partner);
 		
 		partner = new Partner();
 		partner.setIdPartner(3);
 		partner.setSiglaPartner("siglaPartner_3");
 		partner.setNome("nome_3");
-		partnerRepository.create(partner);
+		partnerManager.insert(partner);
+		partners.add(partner);
 		
 		
 
-		// WorkPackagePartnerMapping
-		workPackagePartnerMappingRepository = new WorkPackagePartnerMappingRepository(DataSource.DB2);
-		workPackagePartnerMappingRepository.drop();
-		workPackagePartnerMappingRepository.createTable();
-		workPackagePartnerMappingRepository.create(1,1);
-		workPackagePartnerMappingRepository.create(1,2);
-		workPackagePartnerMappingRepository.create(1,3);
-		workPackagePartnerMappingRepository.create(2,1);
-		workPackagePartnerMappingRepository.create(2,2);
-		workPackagePartnerMappingRepository.create(2,3);
-		workPackagePartnerMappingRepository.create(3,1);
-		workPackagePartnerMappingRepository.create(3,2);
-		workPackagePartnerMappingRepository.create(3,3);
-		
+		for(WorkPackage workPackage1:  workPackages){
+			workPackage1.setPartners(partners);
+			workPackageManager.update(workPackage1);
+		}	
+		for(Progetto progetto1:  progetti){
+			progetto1.setWorkPackages(workPackages);
+			progettoManager.update(progetto1);
+		}	
+		for(Partner partner1:  partners){
+			partner1.setWorkPackages(workPackages);
+			partnerManager.update(partner1);
+		}	
 		
 		//Scrivi su file
 		try {
@@ -189,4 +206,5 @@ public class JDBCTest {
 		
 		return result.toString();
 	}
+	
 }

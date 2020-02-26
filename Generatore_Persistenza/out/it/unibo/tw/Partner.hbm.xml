@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="it.unibo.tw.beans.Partner" table="partner">
+
+		<id name="idPartner" column="id_partner">
+			<generator class="increment"/>
+		</id>
+
+
+		<property  name="siglaPartner" column="sigla_partner" unique="true" not-null="true"/>
+
+		<property name="nome" column="nome" not-null="true"/>
+
+		<set name="workPackages" inverse="true" lazy="true" fetch="select" >
+			<key column="id_partner" />
+			<many-to-many column="id_workpackage" class="it.unibo.tw.beans.WorkPackage" />
+		</set>
+		
+	</class>
+</hibernate-mapping>
