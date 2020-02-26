@@ -1,7 +1,10 @@
 package generatore.problema;
 
+import javax.rmi.CORBA.Util;
+
 import generatore.Generatore;
 import generatore.global.Classe;
+import generatore.global.Utils;
 
 public class Riferimento<T extends Classe> {
 
@@ -35,18 +38,19 @@ public class Riferimento<T extends Classe> {
 				}
 			}
 		else {
-			if(tipoFetch!=null)
-				System.err.println("Attenzione! TipoFetch non nullo, ma navigabilità assente");
-			else
+//			if(tipoFetch!=null)
+//				System.err.println("Attenzione! TipoFetch non nullo, ma navigabilità assente");
+//			else
 				this.tipoFetch = null;
 		}
 		//this.thereIsDirectReferences = thereIsDirectReferences;
 		
-		if(this.tipoRelazione.equals("n1") || this.tipoRelazione.equals("11")) 
-			this.thereIsDirectReferences = false;
-		else
+//		if(this.tipoRelazione.equals("n1") || this.tipoRelazione.equals("11")) 
+//			this.thereIsDirectReferences = false;
+//		else
 			this.thereIsDirectReferences = thereIsDirectReferences;
-		
+			
+		attributo=new Attributo(Utils.capFirst(toClasse.getNome()), toClasse.getNome());
 		from.addRiferimento(this);
 	}
 	
@@ -67,9 +71,7 @@ public class Riferimento<T extends Classe> {
 	
 	public boolean getIsLazyLoad() {
 		if(this.getTipoFetch() != null && this.getTipoFetch().equals(Generatore.LAZY_LOAD))
-			//return isLazyLoad=true;
 			return true;
-		//return isLazyLoad=false;
 		return false;
 	}
 	public boolean isEager() {

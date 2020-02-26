@@ -205,8 +205,8 @@ public class GeneratoreJDBC {
 		if(relazione.thereIsDirectReferences()) {
 			//TODO attenzione: getPrimaryKey in caso di classi con più primarykey genererà un file che risulterà incorretto secondo le specifiche del es;
 			MetodoFind<Repository> mf = new MetodoFind<Repository>(relazione.getTo(), relazione.getFrom(), relazione.getFrom().getPrimaryKey(),relazione.getIsLazyLoad());
-			mf.setPossessore(relazione.getFrom());
-			relazione.getFrom().addMetodoFind(mf);
+			mf.setPossessore(relazione.getTo());
+			relazione.getTo().addMetodoFind(mf);
 			//if(relazione.thereIsDirectReferences())
 				//proxyMapping.add(mf);
 			//relazione.getFromClasse().addDb2References(relazione.getToClasse());

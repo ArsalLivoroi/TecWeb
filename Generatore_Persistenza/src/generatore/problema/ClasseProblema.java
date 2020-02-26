@@ -17,6 +17,13 @@ public class ClasseProblema extends Classe {
 		// TODO Auto-generated constructor stub
 	}
 
+	public boolean isLazyLoading() {
+		for(Riferimento<?> r : this.getRiferimenti())
+			if(r.getIsLazyLoad())
+				return true;
+		return false;
+	}
+
 	
 //	@Override
 //	public void addRiferimento(Riferimento<?> riferimento) {

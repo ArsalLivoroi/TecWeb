@@ -40,57 +40,58 @@ public class Generatore {
 
 	private static Problema inizializzaProblema() {
 
-		//--Tecnologia richiesta
+		//--1.Tecnologia richiesta  (JDBC | DAO | HIBERNATE)
 		problema = new Problema(HIBERNATE); 
 
-		//--Classi
-		ClasseProblema c1 = new ClasseProblema("Piatto Prova", "Piatti Prova");
-		ClasseProblema c2 = new ClasseProblema("Ingrediente Prova", "Ingredienti prova");
-		//ClasseProblema c3 = new ClasseProblema("Partner", "Partners");
+		//--2.Classi UML	new ClasseProblema("nome classe", "nome plurale");
+		ClasseProblema c1 = new ClasseProblema("Progetto", "Progetti");
+		ClasseProblema c2 = new ClasseProblema("Work Package", "Work Packages");
+		ClasseProblema c3 = new ClasseProblema("Partner", "Partners");
 		
-		//add classi
+		//--3.aggiungi le classi UML al problema
 		problema.addClasseProblema(c1);
 		problema.addClasseProblema(c2);
-		//problema.addClasseProblema(c3);
+		problema.addClasseProblema(c3);
 		
-		//Riferimenti tra classi (relazioni tra le diverse classi, crea in automatico la classe mapping se necessario)
+		//--4.per ogni relazione tra 2 classi, creare 2 riferimenti (una per ogni direzione di lettura)
+		//(crea in automatico la classe mapping se necessario)
 		//Riferimento(from, to, tipoRelazione, tipoFetch, navigabile?)
 		//se tipoFetch == null, ma è navigabile, viene scelto il tipo di caricamento più appropriato
-		Riferimento<ClasseProblema> c1_c2 = new Riferimento<ClasseProblema>(c1, c2, MANY_TO_MANY, null, false);
-		Riferimento<ClasseProblema> c2_c1 = new Riferimento<ClasseProblema>(c2, c1, MANY_TO_MANY, LAZY_LOAD, true);
-		//Riferimento<ClasseProblema> c2_c3 = new Riferimento<ClasseProblema>(c2, c3, "nm", null, false);
-		//Riferimento<ClasseProblema> c3_c2 = new Riferimento<ClasseProblema>(c3, c2, "nm", LAZY_LOAD, true);
+		Riferimento<ClasseProblema> c1_c2 = new Riferimento<ClasseProblema>(c1, c2, ONE_TO_MANY, LAZY_LOAD, true);
+		Riferimento<ClasseProblema> c2_c1 = new Riferimento<ClasseProblema>(c2, c1, MANY_TO_ONE, LAZY_LOAD, true);
+		Riferimento<ClasseProblema> c2_c3 = new Riferimento<ClasseProblema>(c2, c3, MANY_TO_MANY, LAZY_LOAD, true);
+		Riferimento<ClasseProblema> c3_c2 = new Riferimento<ClasseProblema>(c3, c2, MANY_TO_MANY, LAZY_LOAD, true);
 
-		
-		//PrimatyKey Se specificato, altrimenti aggiunge di default
+		//--5.PrimatyKey Se specificato, altrimenti viene aggiunto in automatico l'ID surrogato
 		//c1.addPrimaryKey(new Attributo(STRING, "targa"));	
 		//c2.addPrimaryKey(new Attributo(INT, "id"));		
 		//c3.addPrimaryKey(new Attributo(INT, "id"));
 
-		//UNIQUE (gli atributi sottolineati), possono esserci più attributi per unique (mai capitato)
+		//--6.UNIQUE (gli atributi sottolineati), possono esserci più attributi per unique (mai capitato)
 		Unique uC1 = new Unique();
-		uC1.addAttributo(new Attributo(STRING, "Nome piatto"));
+		uC1.addAttributo(new Attributo(STRING, "Codice Progetto"));
 //		uC1.addAttributo(new Attributo(INT, "idon"));  //SE PIU DI UNO
 		c1.addUnique(uC1);
 
 		Unique uC2 = (new Unique());
-		uC2.addAttributo(new Attributo(STRING, "Nome Ingrediente"));
+		uC2.addAttributo(new Attributo(STRING, "Nome WP"));
 		c2.addUnique(uC2);
 		
-		//Unique uC3 = (new Unique());
-		//uC3.addAttributo(new Attributo(STRING, "Sigla Partner"));
-		//c3.addUnique(uC3);
+		Unique uC3 = (new Unique());
+		uC3.addAttributo(new Attributo(STRING, "Sigla Partner"));
+		c3.addUnique(uC3);
 		
-		//Attributi, tutto ciò che non è sottolineato
-		c1.addAttributo(new Attributo(STRING, "Classificazione Piatto"));
-		c1.addAttributo(new Attributo(INT, "Calorie"));
-		//c1.addAttributo(new Attributo(INT, "Durata"));
 		
-		c2.addAttributo(new Attributo(INT, "Quantita"));
-		//c2.addAttributo(new Attributo(STRING, "Descrizione"));
+		//--7.Attributi, tutto ciò che non è sottolineato
+		c1.addAttributo(new Attributo(STRING, "Nome Progetto"));
+		c1.addAttributo(new Attributo(INT, "Anno Inizio"));
+		c1.addAttributo(new Attributo(INT, "Durata"));
+		
+		c2.addAttributo(new Attributo(STRING, "Titolo"));
+		c2.addAttributo(new Attributo(STRING, "Descrizione"));
 		//c2.addAttributo(new Attributo(STRING, "descrizione Tipo Acc"));
 		
-		//c3.addAttributo(new Attributo(STRING, "nome"));
+		c3.addAttributo(new Attributo(STRING, "nome"));
 		//c3.addAttributo(new Attributo(STRING, "citta"));
 		//c3.addAttributo(new Attributo(STRING, "indirizzo"));
 

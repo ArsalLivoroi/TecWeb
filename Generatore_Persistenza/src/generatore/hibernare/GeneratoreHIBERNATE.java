@@ -134,8 +134,8 @@ public class GeneratoreHIBERNATE {
 	private void impostaManagerNM(Riferimento<Manager> relazione) {
 		
 		MetodoFind<Manager> mf = new MetodoFind<Manager>(relazione.getTo(), relazione.getFrom(), relazione.getFrom().getPrimaryKey(),false);
-		mf.setPossessore(relazione.getFrom());
-		relazione.getFrom().addMetodoFind(mf);
+		mf.setPossessore(relazione.getTo());
+		relazione.getTo().addMetodoFind(mf);
 		
 	}
 
@@ -144,8 +144,8 @@ public class GeneratoreHIBERNATE {
 	private void impostaManager1N(Riferimento<Manager> relazione) {
 			//TODO attenzione: getPrimaryKey in caso di classi con più primarykey genererà un file che risulterà incorretto secondo le specifiche del es;
 			MetodoFind<Manager> mf = new MetodoFind<Manager>(relazione.getTo(), relazione.getFrom(), relazione.getFrom().getPrimaryKey(),false);
-			mf.setPossessore(relazione.getFrom());
-			relazione.getFrom().addMetodoFind(mf);
+			mf.setPossessore(relazione.getTo());
+			relazione.getTo().addMetodoFind(mf);
 
 	}
 

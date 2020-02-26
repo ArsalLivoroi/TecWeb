@@ -223,7 +223,7 @@ public class GeneratoreDAO {
 						db2dao.addMetodoFind(new MetodoFind<DB2DAO>(db2dao, db2dao, atr, false));
 			}
 			for(Attributo atr: db2dao.getAttributiWithoutUnique())
-				db2dao.addMetodoFind(new MetodoFind<DB2DAO>(db2dao, db2dao, atr, false));
+				db2dao.addMetodoFind(new MetodoFind<DB2DAO>(db2dao, db2dao, atr, c.isLazyLoading()));
 
 			this.get(c).setDB2DAO(db2dao);
 		}
@@ -314,29 +314,35 @@ public class GeneratoreDAO {
 		for(Unique un: fromClasse.getUnique())
 			if(un.getAttributi().size()>1)
 				for(Attributo atr: un.getAttributi())
-					classeMapping.addMetodoFind(new MetodoFind<DB2DAO>(toClasse, fromClasse, atr,false));
+					classeMapping.addMetodoFind(new MetodoFind<DB2DAO>(toClasse, fromClasse, atr,relazione.getIsLazyLoad()));
 
 		for(Attributo atr: toClasse.getPrimaryKeys())
-			classeMapping.addMetodoFind(new MetodoFind<DB2DAO>(fromClasse, toClasse, atr,false));
+			classeMapping.addMetodoFind(new MetodoFind<DB2DAO>(fromClasse, toClasse, atr,relazione.getIsLazyLoad()));
 		for(Unique un: toClasse.getUnique())
 			if(un.getAttributi().size()>1)
 				for(Attributo atr: un.getAttributi())
-					classeMapping.addMetodoFind(new MetodoFind<DB2DAO>(fromClasse, toClasse, atr,false));
+					classeMapping.addMetodoFind(new MetodoFind<DB2DAO>(fromClasse, toClasse, atr,relazione.getIsLazyLoad()));
 
 
 		relazione.clear();
 	}
 
 	private void impostaDB2DAON1(Riferimento<DB2DAO> relazione) {
+		if(!relazione.thereIsDirectReferences()) {
+			Attributo a = relazione.getTo().getPrimaryKey();	
+			relazione.getFrom().addAttributo(a);
 
+			//#TODO  capire se serve la navigabilità diretta (tramite riferimento ) o basta l'id;
+			relazione.clear();  
+		}	
 	}
 
 	private void impostaDB2DAO1N(Riferimento<DB2DAO> relazione) {
 		if(relazione.thereIsDirectReferences()) {
 			//TODO attenzione: getPrimaryKey in caso di classi con più primarykey genererà un file che risulterà incorretto secondo le specifiche del es;
 			MetodoFind<DB2DAO> mf = new MetodoFind<DB2DAO>(relazione.getTo(), relazione.getFrom(), relazione.getFrom().getPrimaryKey(),relazione.getIsLazyLoad());
-			mf.setPossessore(relazione.getFrom());
-			relazione.getFrom().addMetodoFind(mf);
+			mf.setPossessore(relazione.getTo());
+			relazione.getTo().addMetodoFind(mf);
 			if(relazione.thereIsDirectReferences())
 				proxyMapping.add(mf);
 			//relazione.getFromClasse().addDb2References(relazione.getToClasse());

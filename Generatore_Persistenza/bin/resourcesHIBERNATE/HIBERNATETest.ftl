@@ -2,7 +2,6 @@ package it.unibo.tw;
 
 import java.util.*;
 import java.io.*;
-import it.unibo.tw.db.*;
 import java.sql.*;
 
 public class TestHIB {

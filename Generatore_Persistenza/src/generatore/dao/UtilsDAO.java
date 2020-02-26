@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Set;
 
 import generatore.Generatore;
+import generatore.global.Classe;
 import generatore.problema.Attributo;
 import generatore.problema.MappingMetodoQuery;
 import generatore.problema.MetodoFind;
+import generatore.problema.Riferimento;
 
 public class UtilsDAO {
 
@@ -399,6 +401,7 @@ public class UtilsDAO {
 		mmq.m1.add("Connection conn = null;");
 		mmq.m2.add("if("+generaCheck(attributi)+")");
 		mmq.m2.add("\treturn result;");
+		//mmq.m3.add("result = new ArrayList<"+mf.getClasseTarget().getNomeBean()+">();");
 		mmq.m4a.add("PreparedStatement statement = conn.prepareStatement("+nomeQuery+");");
 		
 		mmq.m4b.add("statement.clearParameters();");
@@ -426,7 +429,7 @@ public class UtilsDAO {
 		//if(classe.getReference(mf.getClasseTarget(),mf.getClasseSource())!=null && classe.getReference(mf.getClasseTarget(),mf.getClasseSource()).isLazyLoad())
 		String res=("	"+mf.getClasseTarget().getNomeBean()+" entity = new ");
 		//System.out.println("inFind: "+mf.getIsLazy()+" "+mf.getClasseTarget());
-		if(mf.getClasseTarget().isLazyLoading()) {
+		if(mf.getIsLazy()) {
 			res+=(	"DB2"+ mf.getClasseTarget().getNomeBean()+"Proxy();");     //Proxy
 		}
 		else
@@ -450,6 +453,29 @@ public class UtilsDAO {
 			//m4d+="\n\t\t\t\tentity.set"+atri.getNomeUp()+"(rs.get"+atri.getTipoUp()+"(\""+atri.getNome()+"\"));";
 		}
 		
+		Set<Riferimento<? extends Classe>> refs = mf.getClasseTarget().getRiferimenti();
+		for(Riferimento<? extends Classe> r: refs) {
+			if(r.thereIsDirectReferences() && !r.getIsLazyLoad()) {
+				Attributo atri = r.getAttributo();
+				Attributo pk = r.getTo().getPrimaryKey();
+				tmp = "rs.get"+pk.getTipoUp()+"(\""+pk.getNomeUp()+"\")";
+				
+				String t = r.getTipoRelazione();
+				if(t.equals("n1")||t.equals("11")) {
+					tmp = "new DB2"+r.getTo().getNome()+"DAO().readBy"+pk.getNomeUp()+"("+tmp+")";
+					mmq.m4d.add(	"	entity.set"+r.getTo().getNome()+"("+tmp+");");
+				}else{
+					//if(t.equals("nm"))
+						tmp = "new DB2"+r.getTo().getNome()+"DAO().find"+r.getTo().getNomePlurale()+"By"+r.getFrom().getPrimaryKey().getNomeUp()+"("+tmp+")";
+					//else
+						//tmp = "new DB2"+r.getTo().getNome()+"DAO().findBy"+pk.getNomeUp()+"("+tmp+")";
+					mmq.m4d.add(	"	entity.set"+r.getTo().getNomePlurale()+"("+tmp+");");
+				}
+				
+			}
+		}
+		
+		mmq.m4d.add("	result.add(entity);");
 		mmq.m4d.add("}");
 		
 		mmq.m4e.add("rs.close();");

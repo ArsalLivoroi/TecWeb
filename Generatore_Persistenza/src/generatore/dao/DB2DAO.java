@@ -161,12 +161,12 @@ public class DB2DAO extends ClasseProblema{
 		return haveUML;
 	}
 
-	public boolean isLazyLoading() {
-		for(Riferimento<?> r : this.getRiferimenti())
-			if(r.getIsLazyLoad())
-				return true;
-		return false;
-	}
+//	public boolean isLazyLoading() {
+//		for(Riferimento<?> r : this.getRiferimenti())
+//			if(r.getIsLazyLoad())
+//				return true;
+//		return false;
+//	}
 
 	public String getNomeProxy() {
 		return nomeProxy;

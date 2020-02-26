@@ -6,9 +6,12 @@ import java.util.List;
 import java.util.Set;
 
 import generatore.Generatore;
+import generatore.global.Classe;
 import generatore.problema.Attributo;
 import generatore.problema.MappingMetodoQuery;
 import generatore.problema.MetodoFind;
+import generatore.problema.Riferimento;
+import it.unibo.tw.db.DataSource;
 
 public class UtilsJDBC {
 	
@@ -445,10 +448,10 @@ public class UtilsJDBC {
 		//if(classe.getReference(mf.getClasseTarget(),mf.getClasseSource())!=null && classe.getReference(mf.getClasseTarget(),mf.getClasseSource()).isLazyLoad())
 		String res=("	"+mf.getClasseTarget().getNomeBean()+" entity = new ");
 		//System.out.println("inFind: "+mf.getIsLazy()+" "+mf.getClasseTarget());
-		if(mf.getClasseTarget().isLazyLoading()) {
-			res+=(	"DB2"+ mf.getClasseTarget().getNomeBean()+"Proxy();");     //Proxy
-		}
-		else
+//		if(mf.getClasseTarget().isLazyLoading()) {
+//			res+=(	"DB2"+ mf.getClasseTarget().getNomeBean()+"Proxy();");     //Proxy
+//		}
+//		else
 			res+=(	""+mf.getClasseTarget().getNomeBean()+"();");
 		mmq.m4d.add(res);
 		List<Attributo> attrs = new ArrayList<Attributo>();
@@ -469,6 +472,29 @@ public class UtilsJDBC {
 			//m4d+="\n\t\t\t\tentity.set"+atri.getNomeUp()+"(rs.get"+atri.getTipoUp()+"(\""+atri.getNome()+"\"));";
 		}
 		
+		Set<Riferimento<? extends Classe>> refs = mf.getClasseTarget().getRiferimenti();
+		for(Riferimento<? extends Classe> r: refs) {
+			if(r.thereIsDirectReferences()) {
+				Attributo atri = r.getAttributo();
+				Attributo pk = r.getTo().getPrimaryKey();
+				tmp = "rs.get"+pk.getTipoUp()+"(\""+pk.getNomeUp()+"\")";
+				
+				String t = r.getTipoRelazione();
+				if(t.equals("n1")||t.equals("11")) {
+					tmp = "new "+r.getTo().getNome()+"Repository(DataSource.DB2).readBy"+pk.getNomeUp()+"("+tmp+")";
+					mmq.m4d.add(	"	entity.set"+r.getTo().getNome()+"("+tmp+");");
+				}else{
+					//if(t.equals("nm"))
+						tmp = "new "+r.getTo().getNome()+"Repository(DataSource.DB2).find"+r.getTo().getNomePlurale()+"By"+r.getFrom().getPrimaryKey().getNomeUp()+"("+tmp+")";
+					//else
+						//tmp = "new DB2"+r.getTo().getNome()+"DAO().findBy"+pk.getNomeUp()+"("+tmp+")";
+					mmq.m4d.add(	"	entity.set"+r.getTo().getNomePlurale()+"("+tmp+");");
+				}
+				
+			}
+		}
+		
+		mmq.m4d.add("	result.add(entity);");
 		mmq.m4d.add("}");
 		
 		mmq.m4e.add("rs.close();");
