@@ -1,136 +1,124 @@
 package it.unibo.tw;
 
+import it.unibo.tw.dao.db2.*;
+import it.unibo.tw.dao.*;
 import java.util.*;
 import java.io.*;
-import java.sql.*;
 
-public class TestHIB {
+public class DAOTest {
 	
 	static PrintWriter pw=null;
 	
-	private static WorkPackageManager workPackageManager;	
-	private static ProgettoManager progettoManager;	
-	private static PartnerManager partnerManager;	
+	public static final int DAO = DAOFactory.DB2;
+	
+	private static WorkPackageDAO workPackageDAO;	
+	private static WorkPackagePartnerMappingDAO workPackagePartnerMappingDAO;	
+	private static ProgettoDAO progettoDAO;	
+	private static PartnerDAO partnerDAO;	
 	
 	public static void main(String[] args) {
-
-		Class.forName("com.ibm.db2.jcc.DB2Driver");
-		String url = "jdbc:db2://diva.deis.unibo.it:50000/tw_stud";
-		
-		String username = "INSERISCI_MATRICOLA_FORMATO_00123456";
-		String password = "INSERISCI_QUI_LA_TUA_PASSWORD_DI_DB2";
-		Connection conn = DriverManager.getConnection(url, username, password);
-		
+	
+		DAOFactory daoFactory = DAOFactory.getDAOFactory(DAO);
 		
 		// WorkPackage
-		workPackageManager = new WorkPackageManager(conn);
-		workPackageManager.drop();
-		workPackageManager.createTable();
+		workPackageDAO = daoFactory.getWorkPackageDAO();
+		workPackageDAO.drop();
+		workPackageDAO.createTable();
 		
-		WorkPackage workPackage;
-		Set<WorkPackage> workPackages = new HashSet<WorkPackage>();
-		workPackage = new WorkPackage();
+		WorkPackageDTO workPackage;
+		workPackage = new WorkPackageDTO();
 		workPackage.setIdWorkPackage(1);
 		workPackage.setNomeWP("nomeWP_1");
 		workPackage.setTitolo("titolo_1");
 		workPackage.setDescrizione("descrizione_1");
-		workPackageManager.insert(workPackage);
-		workPackages.add(workPackage);
+		workPackageDAO.create(workPackage);
 		
-		workPackage = new WorkPackage();
+		workPackage = new WorkPackageDTO();
 		workPackage.setIdWorkPackage(2);
 		workPackage.setNomeWP("nomeWP_2");
 		workPackage.setTitolo("titolo_2");
 		workPackage.setDescrizione("descrizione_2");
-		workPackageManager.insert(workPackage);
-		workPackages.add(workPackage);
+		workPackageDAO.create(workPackage);
 		
-		workPackage = new WorkPackage();
+		workPackage = new WorkPackageDTO();
 		workPackage.setIdWorkPackage(3);
 		workPackage.setNomeWP("nomeWP_3");
 		workPackage.setTitolo("titolo_3");
 		workPackage.setDescrizione("descrizione_3");
-		workPackageManager.insert(workPackage);
-		workPackages.add(workPackage);
+		workPackageDAO.create(workPackage);
 		
 		
 		// Progetto
-		progettoManager = new ProgettoManager(conn);
-		progettoManager.drop();
-		progettoManager.createTable();
+		progettoDAO = daoFactory.getProgettoDAO();
+		progettoDAO.drop();
+		progettoDAO.createTable();
 		
-		Progetto progetto;
-		Set<Progetto> progetti = new HashSet<Progetto>();
-		progetto = new Progetto();
+		ProgettoDTO progetto;
+		progetto = new ProgettoDTO();
 		progetto.setIdProgetto(1);
 		progetto.setCodiceProgetto("codiceProgetto_1");
 		progetto.setNomeProgetto("nomeProgetto_1");
 		progetto.setAnnoInizio(1);
 		progetto.setDurata(1);
-		progettoManager.insert(progetto);
-		progetti.add(progetto);
+		progettoDAO.create(progetto);
 		
-		progetto = new Progetto();
+		progetto = new ProgettoDTO();
 		progetto.setIdProgetto(2);
 		progetto.setCodiceProgetto("codiceProgetto_2");
 		progetto.setNomeProgetto("nomeProgetto_2");
 		progetto.setAnnoInizio(2);
 		progetto.setDurata(2);
-		progettoManager.insert(progetto);
-		progetti.add(progetto);
+		progettoDAO.create(progetto);
 		
-		progetto = new Progetto();
+		progetto = new ProgettoDTO();
 		progetto.setIdProgetto(3);
 		progetto.setCodiceProgetto("codiceProgetto_3");
 		progetto.setNomeProgetto("nomeProgetto_3");
 		progetto.setAnnoInizio(3);
 		progetto.setDurata(3);
-		progettoManager.insert(progetto);
-		progetti.add(progetto);
+		progettoDAO.create(progetto);
 		
 		
 		// Partner
-		partnerManager = new PartnerManager(conn);
-		partnerManager.drop();
-		partnerManager.createTable();
+		partnerDAO = daoFactory.getPartnerDAO();
+		partnerDAO.drop();
+		partnerDAO.createTable();
 		
-		Partner partner;
-		Set<Partner> partners = new HashSet<Partner>();
-		partner = new Partner();
+		PartnerDTO partner;
+		partner = new PartnerDTO();
 		partner.setIdPartner(1);
 		partner.setSiglaPartner("siglaPartner_1");
 		partner.setNome("nome_1");
-		partnerManager.insert(partner);
-		partners.add(partner);
+		partnerDAO.create(partner);
 		
-		partner = new Partner();
+		partner = new PartnerDTO();
 		partner.setIdPartner(2);
 		partner.setSiglaPartner("siglaPartner_2");
 		partner.setNome("nome_2");
-		partnerManager.insert(partner);
-		partners.add(partner);
+		partnerDAO.create(partner);
 		
-		partner = new Partner();
+		partner = new PartnerDTO();
 		partner.setIdPartner(3);
 		partner.setSiglaPartner("siglaPartner_3");
 		partner.setNome("nome_3");
-		partnerManager.insert(partner);
-		partners.add(partner);
+		partnerDAO.create(partner);
 		
 		
 
-		for(WorkPackage workPackage1:  workPackages){
-			workPackage1.setPartners(partners);
-			workPackageManager.update(workPackage1);
-		}	
-		for(Progetto progetto1:  progetti){
-			progetto1.setWorkPackages(workPackages);
-			progettoManager.update(progetto1);
-		}	
-		for(Partner partner1:  partners){
-			partner1.setWorkPackages(workPackages);
-			partnerManager.update(partner1);
-		}	
+		// WorkPackagePartnerMapping
+		workPackagePartnerMappingDAO = daoFactory.getWorkPackagePartnerMappingDAO();
+		workPackagePartnerMappingDAO.drop();
+		workPackagePartnerMappingDAO.createTable();
+		workPackagePartnerMappingDAO.create(1,1);
+		workPackagePartnerMappingDAO.create(1,2);
+		workPackagePartnerMappingDAO.create(1,3);
+		workPackagePartnerMappingDAO.create(2,1);
+		workPackagePartnerMappingDAO.create(2,2);
+		workPackagePartnerMappingDAO.create(2,3);
+		workPackagePartnerMappingDAO.create(3,1);
+		workPackagePartnerMappingDAO.create(3,2);
+		workPackagePartnerMappingDAO.create(3,3);
+		
 		
 		//Scrivi su file
 		try {
@@ -190,9 +178,9 @@ public class TestHIB {
 		.collect(Collectors.groupingBy(ProgettoDTO::getNomeProgetto,Collectors.counting()));
 				
 	*/
-		Set<WorkPackage> workPackages=new LinkedHashSet<WorkPackage>();	
-		Set<Progetto> progetti=new LinkedHashSet<Progetto>();	
-		Set<Partner> partners=new LinkedHashSet<Partner>();	
+		Set<WorkPackageDTO> workPackages=new LinkedHashSet<WorkPackageDTO>();	
+		Set<ProgettoDTO> progetti=new LinkedHashSet<ProgettoDTO>();	
+		Set<PartnerDTO> partners=new LinkedHashSet<PartnerDTO>();	
 
 		CLASSE_SOURCE_PLURALE = CLASSE_SOURCE.FIND_CLASSE_SOURCE_BY_ATTRIBUTO_SOURCE(VALORE_ATTRIBUTO);
 		for(CLASSE_SOURCE NOME1 : CLASSE_SOURCE_PLURALE)
@@ -206,5 +194,4 @@ public class TestHIB {
 		
 		return result.toString();
 	}
-	
 }
