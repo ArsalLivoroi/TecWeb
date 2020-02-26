@@ -47,8 +47,8 @@ public class GeneratoreDAO {
 	public void generate() {
 		impostaHaveUML();
 
-		Utils.deleteFolder(new File("./src/it"));
-		File outputDirectory = new File("./src/it/unibo/tw/dao/db2/");
+		Utils.deleteFolder(new File("./out/it"));
+		File outputDirectory = new File("./out/it/unibo/tw/dao/db2/");
 		outputDirectory.mkdirs();
 		//Utils.deleteFolder(new File("./test/it"));
 		//File testDirectory = new File("./test/it/unibo/tw/dao/");
@@ -72,7 +72,7 @@ public class GeneratoreDAO {
 			if(db2Dao != null)
 				daos.add(db2Dao);
 		}	
-		File outputDirectory = new File("./src/it/unibo/tw/");
+		File outputDirectory = new File("./out/it/unibo/tw/");
 		String input = "./resourcesDAO/DAOTest.ftl";
 		GeneratoreFileDAO_FTL GD;
 		try {
@@ -93,7 +93,7 @@ public class GeneratoreDAO {
 			if(db2Dao != null)
 				daos.add(db2Dao);
 		}	
-		File outputDirectory = new File("./src/it/unibo/tw/dao/db2/");
+		File outputDirectory = new File("./out/it/unibo/tw/dao/db2/");
 		String input = "./resourcesDAO/DB2DAOFactory.ftl";
 		GeneratoreFileDAO_FTL GD;
 		try {
@@ -114,7 +114,7 @@ public class GeneratoreDAO {
 			if(db2Dao != null)
 				daos.add(db2Dao);
 		}	
-		File outputDirectory = new File("./src/it/unibo/tw/dao/");
+		File outputDirectory = new File("./out/it/unibo/tw/dao/");
 		String input = "./resourcesDAO/DAOFactory.ftl";
 		GeneratoreFileDAO_FTL GD;
 		try {
@@ -166,7 +166,7 @@ public class GeneratoreDAO {
 	}
 
 	private void generaDB2Dao() {
-		File outputDirectory = new File("./src/it/unibo/tw/dao/db2/");
+		File outputDirectory = new File("./out/it/unibo/tw/dao/db2/");
 		//outputDirectory.getParentFile().mkdirs();
 		String input = "./resourcesDAO/DB2DAO.ftl";
 		GeneratoreFileDAO_FTL GD;
@@ -188,7 +188,7 @@ public class GeneratoreDAO {
 	}
 
 	private void generaDAO() {
-		File outputDirectory = new File("./src/it/unibo/tw/dao/");
+		File outputDirectory = new File("./out/it/unibo/tw/dao/");
 		//outputDirectory.getParentFile().mkdirs();
 		String input = "./resourcesDAO/DAO.ftl";
 		GeneratoreFileDAO_FTL GD;
@@ -347,7 +347,7 @@ public class GeneratoreDAO {
 
 	//-------BEAN------------------
 	private void generaBean() {
-		File outputDirectory = new File("./src/it/unibo/tw/dao/");
+		File outputDirectory = new File("./out/it/unibo/tw/dao/");
 		//outputDirectory.getParentFile().mkdirs();
 		String input = "./resources/Bean.ftl";
 		GeneratoreFileDAO_FTL GB;
@@ -392,7 +392,7 @@ public class GeneratoreDAO {
 				proxyMapping.stream().filter(MetodoFind<DB2DAO>::getIsLazy)
 				.collect(Collectors.groupingBy(MetodoFind<DB2DAO>::getClasseSource, Collectors.toSet()));
 
-		File outputDirectory = new File("./src/it/unibo/tw/dao/db2/");
+		File outputDirectory = new File("./out/it/unibo/tw/dao/db2/");
 		//outputDirectory.getParentFile().mkdirs();
 		String input = "./resourcesDAO/DB2DTOProxy.ftl";
 		GeneratoreFileDAO_FTL GB;

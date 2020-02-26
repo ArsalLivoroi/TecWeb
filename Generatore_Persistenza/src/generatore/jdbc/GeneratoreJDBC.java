@@ -39,7 +39,7 @@ public class GeneratoreJDBC {
 	//-------Repository------------------
 	
 	private void generaRepository() {
-		File outputDirectory = new File("./src/it/unibo/tw/");
+		File outputDirectory = new File("./out/it/unibo/tw/");
 		//outputDirectory.getParentFile().mkdirs();
 		String input = "./resourcesJDBC/Repository.ftl";
 		GeneratoreFileJDBC_FTL GD;
@@ -231,7 +231,7 @@ public class GeneratoreJDBC {
 
 	//-------BEAN------------------
 	private void generaBean() {
-		File outputDirectory = new File("./src/it/unibo/tw/");
+		File outputDirectory = new File("./out/it/unibo/tw/");
 		//outputDirectory.getParentFile().mkdirs();
 		String input = "./resources/Bean.ftl";
 		GeneratoreFileJDBC_FTL GB;
@@ -370,8 +370,8 @@ public class GeneratoreJDBC {
 	public void generate() {
 		impostaHaveUML();
 
-		Utils.deleteFolder(new File("./src/it"));
-		File outputDirectory = new File("./src/it/unibo/tw/db");
+		Utils.deleteFolder(new File("./out/it"));
+		File outputDirectory = new File("./out/it/unibo/tw/db");
 		outputDirectory.mkdirs();
 		
 		generaBean();
@@ -385,7 +385,7 @@ public class GeneratoreJDBC {
 
 
 	private void generaException() {
-		File outputDirectory = new File("./src/it/unibo/tw/db");
+		File outputDirectory = new File("./out/it/unibo/tw/db");
 		String input = "./resourcesJDBC/PersistenceException.ftl";
 		GeneratoreFileJDBC_FTL GD;
 		try {
@@ -400,7 +400,7 @@ public class GeneratoreJDBC {
 
 
 	private void generaDataSource() {
-		File outputDirectory = new File("./src/it/unibo/tw/db");
+		File outputDirectory = new File("./out/it/unibo/tw/db");
 		String input = "./resourcesJDBC/DataSource.ftl";
 		GeneratoreFileJDBC_FTL GD;
 		try {
@@ -421,7 +421,7 @@ public class GeneratoreJDBC {
 			if(repository != null)
 				repositories.add(repository);
 		}	
-		File outputDirectory = new File("./src/it/unibo/tw/");
+		File outputDirectory = new File("./out/it/unibo/tw/");
 		String input = "./resourcesJDBC/JDBCTest.ftl";
 		GeneratoreFileJDBC_FTL GD;
 		try {

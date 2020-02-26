@@ -42,7 +42,7 @@ public class GeneratoreHIBERNATE {
 	//-------Manager------------------
 	
 	private void generaManager() {
-		File outputDirectory = new File("./src/it/unibo/tw/");
+		File outputDirectory = new File("./out/it/unibo/tw/");
 		//outputDirectory.getParentFile().mkdirs();
 		String input = "./resourcesHIBERNATE/Manager.ftl";
 		GeneratoreFileHIBERNATE_FTL GD;
@@ -154,7 +154,7 @@ public class GeneratoreHIBERNATE {
 	
 	//-------BEAN------------------
 	private void generaBean() {
-		File outputDirectory = new File("./src/it/unibo/tw/");
+		File outputDirectory = new File("./out/it/unibo/tw/");
 		//outputDirectory.getParentFile().mkdirs();
 		String input = "./resources/Bean.ftl";
 		GeneratoreFileHIBERNATE_FTL GB;
@@ -282,8 +282,8 @@ public class GeneratoreHIBERNATE {
 	
 	public void generate() {
 
-		Utils.deleteFolder(new File("./src/it"));
-		File outputDirectory = new File("./src/it/unibo/tw/db");
+		Utils.deleteFolder(new File("./out"));
+		File outputDirectory = new File("./out/it/unibo/tw");
 		outputDirectory.mkdirs();
 		
 		generaBean();
@@ -296,7 +296,7 @@ public class GeneratoreHIBERNATE {
 	}
 
 	private void generaHBM_XML() {
-		File outputDirectory = new File("./src/it/unibo/tw/");
+		File outputDirectory = new File("./out/it/unibo/tw/");
 		//outputDirectory.getParentFile().mkdirs();
 		String input = "./resourcesHIBERNATE/HBM_XML.ftl";
 		GeneratoreFileHIBERNATE_FTL GD;
@@ -325,7 +325,7 @@ public class GeneratoreHIBERNATE {
 			if(manager != null)
 				managers.add(manager);
 		}	
-		File outputDirectory = new File("./src/it/unibo/tw/");
+		File outputDirectory = new File("./out/it/unibo/tw/");
 		String input = "./resourcesHIBERNATE/CFG_XML.ftl";
 		GeneratoreFileHIBERNATE_FTL GD;
 		try {
@@ -346,7 +346,7 @@ public class GeneratoreHIBERNATE {
 			if(manager != null)
 				managers.add(manager);
 		}	
-		File outputDirectory = new File("./src/it/unibo/tw/");
+		File outputDirectory = new File("./out/it/unibo/tw/");
 		String input = "./resourcesHIBERNATE/HIBERNATETest.ftl";
 		GeneratoreFileHIBERNATE_FTL GD;
 		try {

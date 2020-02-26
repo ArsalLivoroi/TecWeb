@@ -195,7 +195,7 @@ public class UtilsHIBERNATE {
 		return mmq;
 	}
 	
-	private static String dateJavaToSQL(Attributo atr) {
+	private static String dateJavaToSQL(Attributo atr) {//TODO su hhibernate è diverso
 		String result="";
 		result+=	"	long sec = "+ atr.getNome() + ".getTime();\n";
 		result+=	"	java.sql.Date dataSQL = new java.sql.Date(sec);\n";

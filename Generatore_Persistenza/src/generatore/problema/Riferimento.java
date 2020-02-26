@@ -35,7 +35,10 @@ public class Riferimento<T extends Classe> {
 				}
 			}
 		else {
-			this.tipoFetch = null;
+			if(tipoFetch!=null)
+				System.err.println("Attenzione! TipoFetch non nullo, ma navigabilità assente");
+			else
+				this.tipoFetch = null;
 		}
 		//this.thereIsDirectReferences = thereIsDirectReferences;
 		

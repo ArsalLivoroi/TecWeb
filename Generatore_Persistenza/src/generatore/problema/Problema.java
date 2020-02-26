@@ -26,6 +26,7 @@ public class Problema {
 	}
 	
 	public void check() {
+		//TODO
 		List<ClasseProblema> l = new ArrayList<ClasseProblema>();
 		l.addAll(classi);
 		for(int i=0; i<classi.size();i++)

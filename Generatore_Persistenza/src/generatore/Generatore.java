@@ -1,9 +1,5 @@
 package generatore;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
 
 import generatore.dao.GeneratoreDAO;
@@ -30,14 +26,19 @@ public class Generatore {
 	public final static String FLOAT ="float";
 	public final static String DOUBLE ="double";
 
-	public final static String LAZY_LOAD ="lazy-load";
-	public final static String EAGER ="eager";
 	public static final String DAO = "dao";
 	public static final String HIBERNATE = "hibernate";
 	public static final String JDBC = "jdbc";
 	
+	public final static String LAZY_LOAD ="lazy-load";
+	public final static String EAGER ="eager";
+		
+	public static final String ONE_TO_ONE = "11";
+	public static final String ONE_TO_MANY = "1n";
+	public static final String MANY_TO_ONE = "n1";
+	public static final String MANY_TO_MANY = "nm";
 
-	private static Problema readProblema() {
+	private static Problema inizializzaProblema() {
 
 		//--Tecnologia richiesta
 		problema = new Problema(HIBERNATE); 
@@ -46,6 +47,7 @@ public class Generatore {
 		ClasseProblema c1 = new ClasseProblema("Piatto Prova", "Piatti Prova");
 		ClasseProblema c2 = new ClasseProblema("Ingrediente Prova", "Ingredienti prova");
 		//ClasseProblema c3 = new ClasseProblema("Partner", "Partners");
+		
 		//add classi
 		problema.addClasseProblema(c1);
 		problema.addClasseProblema(c2);
@@ -53,9 +55,9 @@ public class Generatore {
 		
 		//Riferimenti tra classi (relazioni tra le diverse classi, crea in automatico la classe mapping se necessario)
 		//Riferimento(from, to, tipoRelazione, tipoFetch, navigabile?)
-		//se non specificato il tipoFetc lo inposta in automatico
-		Riferimento<ClasseProblema> c1_c2 = new Riferimento<ClasseProblema>(c1, c2, "nm", null, true);
-		Riferimento<ClasseProblema> c2_c1 = new Riferimento<ClasseProblema>(c2, c1, "nm", LAZY_LOAD, true);
+		//se tipoFetch == null, ma è navigabile, viene scelto il tipo di caricamento più appropriato
+		Riferimento<ClasseProblema> c1_c2 = new Riferimento<ClasseProblema>(c1, c2, MANY_TO_MANY, null, false);
+		Riferimento<ClasseProblema> c2_c1 = new Riferimento<ClasseProblema>(c2, c1, MANY_TO_MANY, LAZY_LOAD, true);
 		//Riferimento<ClasseProblema> c2_c3 = new Riferimento<ClasseProblema>(c2, c3, "nm", null, false);
 		//Riferimento<ClasseProblema> c3_c2 = new Riferimento<ClasseProblema>(c3, c2, "nm", LAZY_LOAD, true);
 
@@ -97,7 +99,7 @@ public class Generatore {
 
 	public static void main(String[] args) throws Exception {
 
-			Problema problema = readProblema();
+			Problema problema = inizializzaProblema();
 			problema.check();
 			classi = problema.getClassi();
 			show();
@@ -116,7 +118,7 @@ public class Generatore {
 
 
 	private static void show() {
-		System.out.println();
+		//System.out.println();
 		System.out.println(problema.getTecnologia());
 		for(ClasseProblema c : classi)
 			System.out.println(c);
