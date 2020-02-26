@@ -7,22 +7,23 @@ import java.util.*;
 import org.hibernate.*; 
 import org.hibernate.cfg.Configuration;
 
-public class PiattoProvaManager{
+public class ProgettoManager{
 	private Connection connection;
 	private SessionFactory factory;
-	static final String TABLE = "piatto_prova";
+	static final String TABLE = "progetto";
 
 	// CREATE entrytable ( code INT NOT NULL PRIMARY KEY, ... );
 	static String create = 
 		" CREATE " +
 			" TABLE " + TABLE +" ( " +
-				"id_piattoprova INT NOT NULL, "+
-				"nome_piatto VARCHAR(100) NOT NULL, "+
-				"classificazione_piatto VARCHAR(100) NOT NULL, "+
-				"calorie INT NOT NULL, "+
-				"FOREING KEY(id_ingredienteprova) REFERENCES ingrediente_prova(id_ingredienteprova) "+
-				"UNIQUE(nome_piatto), "+
-				"PRIMARY KEY(id_piattoprova) " +
+				"id_progetto INT NOT NULL, "+
+				"codice_progetto VARCHAR(100) NOT NULL, "+
+				"nome_progetto VARCHAR(100) NOT NULL, "+
+				"anno_inizio INT NOT NULL, "+
+				"durata INT NOT NULL, "+
+				"FOREING KEY(id_workpackage) REFERENCES work_package(id_workpackage) "+
+				"UNIQUE(codice_progetto), "+
+				"PRIMARY KEY(id_progetto) " +
 			") ";
 
 	static String drop = 
@@ -30,50 +31,49 @@ public class PiattoProvaManager{
 		
 	
 	// delete
-	static String delete_by_idPiattoProva = 
+	static String delete_by_idProgetto = 
 			"DELERE " +
 				"FROM " + TABLE + " " +
-				"WHERE id_piattoprova = ?";
+				"WHERE id_progetto = ?";
 
-	static String delete_by_nomePiatto = 
+	static String delete_by_codiceProgetto = 
 			"DELERE " +
 				"FROM " + TABLE + " " +
-				"WHERE nome_piatto = ?";
+				"WHERE codice_progetto = ?";
 				
 		
 	// QUERY ----		
-	static final String find_piatto_prova_by_classificazionePiatto = 
+	static final String find_progetto_by_nomeProgetto = 
 			" SELECT * "+
 			" FROM "+ TABLE + 
-			" WHERE classificazione_piatto = ? ";
+			" WHERE nome_progetto = ? ";
 			
-	static final String find_piatto_prova_by_calorie = 
+	static final String find_progetto_by_annoInizio = 
 			" SELECT * "+
 			" FROM "+ TABLE + 
-			" WHERE calorie = ? ";
+			" WHERE anno_inizio = ? ";
 			
-	static final String find_ingrediente_prova_by_idPiattoProva = 
+	static final String find_progetto_by_durata = 
 			" SELECT * "+
-			" FROM "+ TABLE + ", ingrediente_prova "+
-			" WHERE piatto_prova.id_ingredienteprova = ingrediente_prova.id_ingredienteprova"+
-			" AND id_piattoprova = ? ";
+			" FROM "+ TABLE + 
+			" WHERE durata = ? ";
 			
 
  
-	public  PiattoProvaManager(Connection connection) {
+	public  ProgettoManager(Connection connection) {
 		this.connection = connection;
 		this.factory = new Configuration().configure().buildSessionFactory();;
 	} 
 
 	
 	//Create
-	public boolean insert(PiattoProva piattoProva){
+	public boolean insert(Progetto progetto){
 		boolean result = false;
 		Session session = factory.openSession();
 		Transaction tx = null;
 		try { 
 			tx = session.beginTransaction();
-			session.save(piattoProva);
+			session.save(progetto);
 			tx.commit();
 			result = true;
 		}        
@@ -90,13 +90,13 @@ public class PiattoProvaManager{
 	
 
 	//Update
-	public boolean update(PiattoProva piattoProva){
+	public boolean update(Progetto progetto){
 		boolean result = false;
 		Session session = factory.openSession();
 		Transaction tx = null;
 		try { 
 			tx = session.beginTransaction();
-			session.update(piattoProva);
+			session.update(progetto);
 			tx.commit();
 			result = true;
 		}        
@@ -149,13 +149,13 @@ public class PiattoProvaManager{
 	
 	 
 	//Delete
-	public boolean delete(PiattoProva piattoProva){
+	public boolean delete(Progetto progetto){
 		boolean result = false;
 		Session session = factory.openSession();
 		Transaction tx = null;
 		try { 
 			tx = session.beginTransaction();
-			session.delete(piattoProva);
+			session.delete(progetto);
 			tx.commit();
 			result = true;
 		}        
@@ -170,14 +170,14 @@ public class PiattoProvaManager{
 		return result;
 	}
 	
-	public boolean deleteByIdPiattoProva(int idPiattoProva){
+	public boolean deleteByIdProgetto(int idProgetto){
 		boolean result = false;
 		Session session = factory.openSession();
 		Transaction tx = null;
 		try { 
 			tx = session.beginTransaction();
-			Query query= session.createSQLQuery(delete_by_idPiattoProva);
-			query.setInteger(0,idPiattoProva);
+			Query query= session.createSQLQuery(delete_by_idProgetto);
+			query.setInteger(0,idProgetto);
 			query.executeUpdate();
 			tx.commit();
 			result = true;
@@ -193,14 +193,14 @@ public class PiattoProvaManager{
 		return result;
 	}
 	
-	public boolean deleteByNomePiatto(String nomePiatto){
+	public boolean deleteByCodiceProgetto(String codiceProgetto){
 		boolean result = false;
 		Session session = factory.openSession();
 		Transaction tx = null;
 		try { 
 			tx = session.beginTransaction();
-			Query query= session.createSQLQuery(delete_by_nomePiatto);
-			query.setString(0,nomePiatto);
+			Query query= session.createSQLQuery(delete_by_codiceProgetto);
+			query.setString(0,codiceProgetto);
 			query.executeUpdate();
 			tx.commit();
 			result = true;
@@ -220,13 +220,13 @@ public class PiattoProvaManager{
 
 	//Find By
 	@SuppressWarnings("unchecked")
-	public Set<PiattoProva> find_piatto_prova_by_classificazionePiatto(String classificazionePiatto){
-		Set<PiattoProva> result = new HashSet<PiattoProva>();
+	public Set<Progetto> find_progetto_by_nomeProgetto(String nomeProgetto){
+		Set<Progetto> result = new HashSet<Progetto>();
 		Session session = factory.openSession();
 		try { 
-			Query query= session.createSQLQuery(find_piatto_prova_by_classificazionePiatto);
-			query.setString(0,classificazionePiatto);
-			result=(HashSet<PiattoProva>) query.list();
+			Query query= session.createSQLQuery(find_progetto_by_nomeProgetto);
+			query.setString(0,nomeProgetto);
+			result=(HashSet<Progetto>) query.list();
 		}        
 		catch (Exception e) {      
          	e.printStackTrace();
@@ -238,13 +238,13 @@ public class PiattoProvaManager{
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Set<PiattoProva> find_piatto_prova_by_calorie(int calorie){
-		Set<PiattoProva> result = new HashSet<PiattoProva>();
+	public Set<Progetto> find_progetto_by_annoInizio(int annoInizio){
+		Set<Progetto> result = new HashSet<Progetto>();
 		Session session = factory.openSession();
 		try { 
-			Query query= session.createSQLQuery(find_piatto_prova_by_calorie);
-			query.setInteger(0,calorie);
-			result=(HashSet<PiattoProva>) query.list();
+			Query query= session.createSQLQuery(find_progetto_by_annoInizio);
+			query.setInteger(0,annoInizio);
+			result=(HashSet<Progetto>) query.list();
 		}        
 		catch (Exception e) {      
          	e.printStackTrace();
@@ -256,13 +256,13 @@ public class PiattoProvaManager{
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Set<IngredienteProva> find_ingrediente_prova_by_idPiattoProva(int idPiattoProva){
-		Set<IngredienteProva> result = new HashSet<IngredienteProva>();
+	public Set<Progetto> find_progetto_by_durata(int durata){
+		Set<Progetto> result = new HashSet<Progetto>();
 		Session session = factory.openSession();
 		try { 
-			Query query= session.createSQLQuery(find_ingrediente_prova_by_idPiattoProva);
-			query.setInteger(0,idPiattoProva);
-			result=(HashSet<IngredienteProva>) query.list();
+			Query query= session.createSQLQuery(find_progetto_by_durata);
+			query.setInteger(0,durata);
+			result=(HashSet<Progetto>) query.list();
 		}        
 		catch (Exception e) {      
          	e.printStackTrace();

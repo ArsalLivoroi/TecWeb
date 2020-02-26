@@ -7,21 +7,21 @@ import java.util.*;
 import org.hibernate.*; 
 import org.hibernate.cfg.Configuration;
 
-public class IngredienteProvaManager{
+public class PartnerManager{
 	private Connection connection;
 	private SessionFactory factory;
-	static final String TABLE = "ingrediente_prova";
+	static final String TABLE = "partner";
 
 	// CREATE entrytable ( code INT NOT NULL PRIMARY KEY, ... );
 	static String create = 
 		" CREATE " +
 			" TABLE " + TABLE +" ( " +
-				"id_ingredienteprova INT NOT NULL, "+
-				"nome_ingrediente VARCHAR(100) NOT NULL, "+
-				"quantita INT NOT NULL, "+
-				"FOREING KEY(id_piattoprova) REFERENCES piatto_prova(id_piattoprova) "+
-				"UNIQUE(nome_ingrediente), "+
-				"PRIMARY KEY(id_ingredienteprova) " +
+				"id_partner INT NOT NULL, "+
+				"sigla_partner VARCHAR(100) NOT NULL, "+
+				"nome VARCHAR(100) NOT NULL, "+
+				"FOREING KEY(id_workpackage) REFERENCES work_package(id_workpackage) "+
+				"UNIQUE(sigla_partner), "+
+				"PRIMARY KEY(id_partner) " +
 			") ";
 
 	static String drop = 
@@ -29,45 +29,44 @@ public class IngredienteProvaManager{
 		
 	
 	// delete
-	static String delete_by_idIngredienteProva = 
+	static String delete_by_idPartner = 
 			"DELERE " +
 				"FROM " + TABLE + " " +
-				"WHERE id_ingredienteprova = ?";
+				"WHERE id_partner = ?";
 
-	static String delete_by_nomeIngrediente = 
+	static String delete_by_siglaPartner = 
 			"DELERE " +
 				"FROM " + TABLE + " " +
-				"WHERE nome_ingrediente = ?";
+				"WHERE sigla_partner = ?";
 				
 		
 	// QUERY ----		
-	static final String find_ingrediente_prova_by_quantita = 
+	static final String find_partner_by_nome = 
 			" SELECT * "+
 			" FROM "+ TABLE + 
-			" WHERE quantita = ? ";
+			" WHERE nome = ? ";
 			
-	static final String find_piatto_prova_by_idIngredienteProva = 
+	static final String find_partner_by_idWorkPackage = 
 			" SELECT * "+
-			" FROM "+ TABLE + ", piatto_prova "+
-			" WHERE ingrediente_prova.id_piattoprova = piatto_prova.id_piattoprova"+
-			" AND id_ingredienteprova = ? ";
+			" FROM "+ TABLE + 
+			" WHERE id_workpackage = ? ";
 			
 
  
-	public  IngredienteProvaManager(Connection connection) {
+	public  PartnerManager(Connection connection) {
 		this.connection = connection;
 		this.factory = new Configuration().configure().buildSessionFactory();;
 	} 
 
 	
 	//Create
-	public boolean insert(IngredienteProva ingredienteProva){
+	public boolean insert(Partner partner){
 		boolean result = false;
 		Session session = factory.openSession();
 		Transaction tx = null;
 		try { 
 			tx = session.beginTransaction();
-			session.save(ingredienteProva);
+			session.save(partner);
 			tx.commit();
 			result = true;
 		}        
@@ -84,13 +83,13 @@ public class IngredienteProvaManager{
 	
 
 	//Update
-	public boolean update(IngredienteProva ingredienteProva){
+	public boolean update(Partner partner){
 		boolean result = false;
 		Session session = factory.openSession();
 		Transaction tx = null;
 		try { 
 			tx = session.beginTransaction();
-			session.update(ingredienteProva);
+			session.update(partner);
 			tx.commit();
 			result = true;
 		}        
@@ -143,13 +142,13 @@ public class IngredienteProvaManager{
 	
 	 
 	//Delete
-	public boolean delete(IngredienteProva ingredienteProva){
+	public boolean delete(Partner partner){
 		boolean result = false;
 		Session session = factory.openSession();
 		Transaction tx = null;
 		try { 
 			tx = session.beginTransaction();
-			session.delete(ingredienteProva);
+			session.delete(partner);
 			tx.commit();
 			result = true;
 		}        
@@ -164,14 +163,14 @@ public class IngredienteProvaManager{
 		return result;
 	}
 	
-	public boolean deleteByIdIngredienteProva(int idIngredienteProva){
+	public boolean deleteByIdPartner(int idPartner){
 		boolean result = false;
 		Session session = factory.openSession();
 		Transaction tx = null;
 		try { 
 			tx = session.beginTransaction();
-			Query query= session.createSQLQuery(delete_by_idIngredienteProva);
-			query.setInteger(0,idIngredienteProva);
+			Query query= session.createSQLQuery(delete_by_idPartner);
+			query.setInteger(0,idPartner);
 			query.executeUpdate();
 			tx.commit();
 			result = true;
@@ -187,14 +186,14 @@ public class IngredienteProvaManager{
 		return result;
 	}
 	
-	public boolean deleteByNomeIngrediente(String nomeIngrediente){
+	public boolean deleteBySiglaPartner(String siglaPartner){
 		boolean result = false;
 		Session session = factory.openSession();
 		Transaction tx = null;
 		try { 
 			tx = session.beginTransaction();
-			Query query= session.createSQLQuery(delete_by_nomeIngrediente);
-			query.setString(0,nomeIngrediente);
+			Query query= session.createSQLQuery(delete_by_siglaPartner);
+			query.setString(0,siglaPartner);
 			query.executeUpdate();
 			tx.commit();
 			result = true;
@@ -214,13 +213,13 @@ public class IngredienteProvaManager{
 
 	//Find By
 	@SuppressWarnings("unchecked")
-	public Set<IngredienteProva> find_ingrediente_prova_by_quantita(int quantita){
-		Set<IngredienteProva> result = new HashSet<IngredienteProva>();
+	public Set<Partner> find_partner_by_nome(String nome){
+		Set<Partner> result = new HashSet<Partner>();
 		Session session = factory.openSession();
 		try { 
-			Query query= session.createSQLQuery(find_ingrediente_prova_by_quantita);
-			query.setInteger(0,quantita);
-			result=(HashSet<IngredienteProva>) query.list();
+			Query query= session.createSQLQuery(find_partner_by_nome);
+			query.setString(0,nome);
+			result=(HashSet<Partner>) query.list();
 		}        
 		catch (Exception e) {      
          	e.printStackTrace();
@@ -232,13 +231,13 @@ public class IngredienteProvaManager{
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Set<PiattoProva> find_piatto_prova_by_idIngredienteProva(int idIngredienteProva){
-		Set<PiattoProva> result = new HashSet<PiattoProva>();
+	public Set<Partner> find_partner_by_idWorkPackage(int idWorkPackage){
+		Set<Partner> result = new HashSet<Partner>();
 		Session session = factory.openSession();
 		try { 
-			Query query= session.createSQLQuery(find_piatto_prova_by_idIngredienteProva);
-			query.setInteger(0,idIngredienteProva);
-			result=(HashSet<PiattoProva>) query.list();
+			Query query= session.createSQLQuery(find_partner_by_idWorkPackage);
+			query.setInteger(0,idWorkPackage);
+			result=(HashSet<Partner>) query.list();
 		}        
 		catch (Exception e) {      
          	e.printStackTrace();

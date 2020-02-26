@@ -22,8 +22,9 @@
     	<property name="show_sql">true</property>
     	<property name="hbm2ddl.auto">create</property>
     	
-		<mapping resource="it/unibo/tw/PiattoProva.hbm.xml"/>
-		<mapping resource="it/unibo/tw/IngredienteProva.hbm.xml"/>
+		<mapping resource="it/unibo/tw/WorkPackage.hbm.xml"/>
+		<mapping resource="it/unibo/tw/Progetto.hbm.xml"/>
+		<mapping resource="it/unibo/tw/Partner.hbm.xml"/>
 
 	</session-factory>
 </hibernate-configuration>

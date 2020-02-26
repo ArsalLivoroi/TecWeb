@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="it.unibo.tw.beans.Progetto" table="progetto">
+
+		<id name="idProgetto" column="id_progetto">
+			<generator class="increment"/>
+		</id>
+
+
+		<property  name="codiceProgetto" column="codice_progetto" unique="true" not-null="true"/>
+
+		<property name="nomeProgetto" column="nome_progetto" not-null="true"/>
+		<property name="annoInizio" column="anno_inizio" not-null="true"/>
+		<property name="durata" column="durata" not-null="true"/>
+
+		<set name="workPackages" inverse="true" lazy="true" fetch="select" >
+			<key column="id_progetto" />
+			<one-to-many class="it.unibo.tw.beans.WorkPackage" />
+		</set>
+		
+	</class>
+</hibernate-mapping>
