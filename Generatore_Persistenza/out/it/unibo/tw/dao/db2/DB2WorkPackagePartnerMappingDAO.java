@@ -241,8 +241,8 @@ public class DB2WorkPackagePartnerMappingDAO implements WorkPackagePartnerMappin
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			while( rs.next() ) {
 				WorkPackageDTO entity = new DB2WorkPackageDTOProxy();
-				entity.setIdWorkPackage(rs.getInt("idWorkPackage"));
-				entity.setNomeWP(rs.getString("nomeWP"));
+				entity.setIdWorkPackage(rs.getInt("id_workpackage"));
+				entity.setNomeWP(rs.getString("nome_wp"));
 				entity.setTitolo(rs.getString("titolo"));
 				entity.setDescrizione(rs.getString("descrizione"));
 				result.add(entity);
@@ -286,8 +286,8 @@ public class DB2WorkPackagePartnerMappingDAO implements WorkPackagePartnerMappin
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			while( rs.next() ) {
 				PartnerDTO entity = new DB2PartnerDTOProxy();
-				entity.setIdPartner(rs.getInt("idPartner"));
-				entity.setSiglaPartner(rs.getString("siglaPartner"));
+				entity.setIdPartner(rs.getInt("id_partner"));
+				entity.setSiglaPartner(rs.getString("sigla_partner"));
 				entity.setNome(rs.getString("nome"));
 				result.add(entity);
 			}

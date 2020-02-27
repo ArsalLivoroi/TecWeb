@@ -170,10 +170,10 @@ public class DB2ProgettoDAO implements ProgettoDAO{
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			if ( rs.next() ) {
 				result = new ProgettoDTO();
-				result.setIdProgetto(rs.getInt("idProgetto"));
-				result.setCodiceProgetto(rs.getString("codiceProgetto"));
-				result.setNomeProgetto(rs.getString("nomeProgetto"));
-				result.setAnnoInizio(rs.getInt("annoInizio"));
+				result.setIdProgetto(rs.getInt("id_progetto"));
+				result.setCodiceProgetto(rs.getString("codice_progetto"));
+				result.setNomeProgetto(rs.getString("nome_progetto"));
+				result.setAnnoInizio(rs.getInt("anno_inizio"));
 				result.setDurata(rs.getInt("durata"));
 			}
 			// --- e. Rilascia la struttura dati del risultato      
@@ -215,10 +215,10 @@ public class DB2ProgettoDAO implements ProgettoDAO{
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			if ( rs.next() ) {
 				result = new ProgettoDTO();
-				result.setIdProgetto(rs.getInt("idProgetto"));
-				result.setCodiceProgetto(rs.getString("codiceProgetto"));
-				result.setNomeProgetto(rs.getString("nomeProgetto"));
-				result.setAnnoInizio(rs.getInt("annoInizio"));
+				result.setIdProgetto(rs.getInt("id_progetto"));
+				result.setCodiceProgetto(rs.getString("codice_progetto"));
+				result.setNomeProgetto(rs.getString("nome_progetto"));
+				result.setAnnoInizio(rs.getInt("anno_inizio"));
 				result.setDurata(rs.getInt("durata"));
 			}
 			// --- e. Rilascia la struttura dati del risultato      
@@ -462,10 +462,10 @@ public class DB2ProgettoDAO implements ProgettoDAO{
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			while( rs.next() ) {
 				ProgettoDTO entity = new DB2ProgettoDTOProxy();
-				entity.setIdProgetto(rs.getInt("idProgetto"));
-				entity.setCodiceProgetto(rs.getString("codiceProgetto"));
-				entity.setNomeProgetto(rs.getString("nomeProgetto"));
-				entity.setAnnoInizio(rs.getInt("annoInizio"));
+				entity.setIdProgetto(rs.getInt("id_progetto"));
+				entity.setCodiceProgetto(rs.getString("codice_progetto"));
+				entity.setNomeProgetto(rs.getString("nome_progetto"));
+				entity.setAnnoInizio(rs.getInt("anno_inizio"));
 				entity.setDurata(rs.getInt("durata"));
 				result.add(entity);
 			}
@@ -508,10 +508,10 @@ public class DB2ProgettoDAO implements ProgettoDAO{
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			while( rs.next() ) {
 				ProgettoDTO entity = new DB2ProgettoDTOProxy();
-				entity.setIdProgetto(rs.getInt("idProgetto"));
-				entity.setCodiceProgetto(rs.getString("codiceProgetto"));
-				entity.setNomeProgetto(rs.getString("nomeProgetto"));
-				entity.setAnnoInizio(rs.getInt("annoInizio"));
+				entity.setIdProgetto(rs.getInt("id_progetto"));
+				entity.setCodiceProgetto(rs.getString("codice_progetto"));
+				entity.setNomeProgetto(rs.getString("nome_progetto"));
+				entity.setAnnoInizio(rs.getInt("anno_inizio"));
 				entity.setDurata(rs.getInt("durata"));
 				result.add(entity);
 			}
@@ -554,10 +554,10 @@ public class DB2ProgettoDAO implements ProgettoDAO{
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			while( rs.next() ) {
 				ProgettoDTO entity = new DB2ProgettoDTOProxy();
-				entity.setIdProgetto(rs.getInt("idProgetto"));
-				entity.setCodiceProgetto(rs.getString("codiceProgetto"));
-				entity.setNomeProgetto(rs.getString("nomeProgetto"));
-				entity.setAnnoInizio(rs.getInt("annoInizio"));
+				entity.setIdProgetto(rs.getInt("id_progetto"));
+				entity.setCodiceProgetto(rs.getString("codice_progetto"));
+				entity.setNomeProgetto(rs.getString("nome_progetto"));
+				entity.setAnnoInizio(rs.getInt("anno_inizio"));
 				entity.setDurata(rs.getInt("durata"));
 				result.add(entity);
 			}
