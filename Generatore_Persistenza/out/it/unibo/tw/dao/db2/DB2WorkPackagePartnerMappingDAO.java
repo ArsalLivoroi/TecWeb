@@ -245,6 +245,7 @@ public class DB2WorkPackagePartnerMappingDAO implements WorkPackagePartnerMappin
 				entity.setNomeWP(rs.getString("nome_wp"));
 				entity.setTitolo(rs.getString("titolo"));
 				entity.setDescrizione(rs.getString("descrizione"));
+				entity.setProgetto(new DB2ProgettoDAO().readByIdProgetto(rs.getInt("id_progetto")));
 				result.add(entity);
 			}
 			// --- e. Rilascia la struttura dati del risultato      

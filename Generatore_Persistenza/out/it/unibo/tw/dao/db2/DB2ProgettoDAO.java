@@ -68,7 +68,6 @@ public class DB2ProgettoDAO implements ProgettoDAO{
 				"nome_progetto VARCHAR(100) NOT NULL, "+
 				"anno_inizio INT NOT NULL, "+
 				"durata INT NOT NULL, "+
-				"FOREING KEY(id_workpackage) REFERENCES work_package(id_workpackage) "+
 				"UNIQUE(codice_progetto), "+
 				"PRIMARY KEY(idProgetto) " +
 			") ";

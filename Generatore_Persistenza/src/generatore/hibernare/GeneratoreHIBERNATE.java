@@ -92,7 +92,7 @@ public class GeneratoreHIBERNATE {
 			ClasseProblema c = mp.getClasseProblema();
 			if(c!=null)
 				for(Riferimento<? extends Classe> r: c.getRiferimenti()) {
-					Riferimento<Manager> relazione = new Riferimento<Manager>(mp.getManager(), this.get(r.getTo()).getManager(), r.getTipoRelazione(), r.getTipoFetch(), r.thereIsDirectReferences());
+					Riferimento<Manager> relazione = new Riferimento<Manager>(mp.getManager(), this.get(r.getTo()).getManager(), r.getTipoRelazione(), r.getTipoFetch(), r.getThereIsDirectReferences());
 					switch (relazione.getTipoRelazione()) {
 					case "1n":
 						impostaManager1N(relazione );
@@ -188,7 +188,7 @@ public class GeneratoreHIBERNATE {
 		for(MappingHIBERNATE mp: map) {
 			ClasseProblema c = mp.getClasseProblema();
 			for(Riferimento<? extends Classe> r: c.getRiferimenti()) {
-				Riferimento<Bean> relazione = new Riferimento<Bean>(mp.getBean(), this.get(r.getTo()).getBean(), r.getTipoRelazione(), r.getTipoFetch(), r.thereIsDirectReferences());
+				Riferimento<Bean> relazione = new Riferimento<Bean>(mp.getBean(), this.get(r.getTo()).getBean(), r.getTipoRelazione(), r.getTipoFetch(), r.getThereIsDirectReferences());
 				switch (relazione.getTipoRelazione()) {
 				case "1n":
 					impostaBean1N(relazione );

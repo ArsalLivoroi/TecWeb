@@ -334,7 +334,7 @@ public class UtilsDAO {
 		
 		Set<Riferimento<? extends Classe>> refs = db2dao.getRiferimenti();
 		for(Riferimento<? extends Classe> r: refs) {
-			if(r.thereIsDirectReferences() && !r.getIsLazyLoad()) {
+			if(r.getThereIsDirectReferences() && !r.getIsLazyLoad()) {
 				Attributo atri = r.getAttributo();
 				Attributo pk = r.getTo().getPrimaryKey();
 				tmp = "rs.get"+pk.getTipoUp()+"(\""+pk.getNomeColumn()+"\")";
@@ -478,8 +478,9 @@ public class UtilsDAO {
 		}
 		
 		Set<Riferimento<? extends Classe>> refs = mf.getClasseTarget().getRiferimenti();
+		//Set<Riferimento<? extends Classe>> refs = db2dao.getRiferimenti();
 		for(Riferimento<? extends Classe> r: refs) {
-			if(r.thereIsDirectReferences() && !r.getIsLazyLoad()) {
+			if(r.getThereIsDirectReferences() && !r.getIsLazyLoad()) {
 				Attributo atri = r.getAttributo();
 				Attributo pk = r.getTo().getPrimaryKey();
 				tmp = "rs.get"+pk.getTipoUp()+"(\""+pk.getNomeColumn()+"\")";

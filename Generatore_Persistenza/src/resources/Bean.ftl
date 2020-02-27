@@ -18,6 +18,7 @@ public class ${bean.nomeBean?cap_first} implements Serializable{
 
 
 <#list bean.riferimenti as riferimento>
+<#if riferimento.thereIsDirectReferences && !bean.nome?contains("Mapping")>
 <#if riferimento.tipoRelazione=="1n" || riferimento.tipoRelazione=="nm" >
 	private Set<${riferimento.to.nomeBean?cap_first}> ${riferimento.to.nomePlurale?uncap_first}; ${riferimento.commento}
 	<#if riferimento.isLazyLoad && bean.nomeBean?contains("DTO")>
@@ -26,6 +27,7 @@ public class ${bean.nomeBean?cap_first} implements Serializable{
 <#elseif riferimento.tipoRelazione=="n1" || riferimento.tipoRelazione=="11">
 	private ${riferimento.to.nomeBean?cap_first} ${riferimento.to.nome?uncap_first};
 </#if>
+</#if>
 <#else>
 </#list>
 	
@@ -33,6 +35,7 @@ public class ${bean.nomeBean?cap_first} implements Serializable{
 
 	public ${bean.nomeBean?cap_first}(){<#if !bean.riferimenti?has_content >}</#if>
 <#list bean.riferimenti as riferimento>
+<#if riferimento.thereIsDirectReferences && !bean.nome?contains("Mapping")>
 <#if riferimento.tipoRelazione=="1n" || riferimento.tipoRelazione=="nm" >
 		this.${riferimento.to.nomePlurale?uncap_first} = new HashSet<${riferimento.to.nomeBean?cap_first}>();
 	<#if riferimento.isLazyLoad && bean.nomeBean?contains("DTO")>
@@ -41,6 +44,7 @@ public class ${bean.nomeBean?cap_first} implements Serializable{
 <#elseif riferimento.tipoRelazione=="n1" || riferimento.tipoRelazione=="11">
 		this.${riferimento.to.nome?uncap_first} = new ${riferimento.to.nomeBean?cap_first}();
 </#if>	
+</#if>
 </#list>
 <#if bean.riferimenti?has_content >
 	}
@@ -65,6 +69,7 @@ public class ${bean.nomeBean?cap_first} implements Serializable{
 </#list>
 
 <#list bean.riferimenti as riferimento>
+<#if riferimento.thereIsDirectReferences && !bean.nome?contains("Mapping")>
 <#if riferimento.tipoRelazione=="1n" || riferimento.tipoRelazione=="nm" >
 	public Set<${riferimento.to.nomeBean?cap_first}> get${riferimento.to.nomePlurale?cap_first}(){
 		return ${riferimento.to.nomePlurale?uncap_first};
@@ -87,6 +92,7 @@ public class ${bean.nomeBean?cap_first} implements Serializable{
 	public void set${riferimento.to.nome?cap_first}(${riferimento.to.nomeBean?cap_first} ${riferimento.to.nome?uncap_first}){
 		this.${riferimento.to.nome?uncap_first} = ${riferimento.to.nome?uncap_first};
 	}	
+</#if>
 </#if>
 </#list>
 

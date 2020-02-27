@@ -349,7 +349,7 @@ public class UtilsJDBC {
 		
 		Set<Riferimento<? extends Classe>> refs = repository.getRiferimenti();
 		for(Riferimento<? extends Classe> r: refs) {
-			if(r.thereIsDirectReferences()) {
+			if(r.getThereIsDirectReferences()) {
 				Attributo atri = r.getAttributo();
 				Attributo pk = r.getTo().getPrimaryKey();
 				tmp = "rs.get"+pk.getTipoUp()+"(\""+pk.getNomeColumn()+"\")";
@@ -498,7 +498,7 @@ public class UtilsJDBC {
 		
 		Set<Riferimento<? extends Classe>> refs = mf.getClasseTarget().getRiferimenti();
 		for(Riferimento<? extends Classe> r: refs) {
-			if(r.thereIsDirectReferences()) {
+			if(r.getThereIsDirectReferences()) {
 				Attributo atri = r.getAttributo();
 				Attributo pk = r.getTo().getPrimaryKey();
 				tmp = "rs.get"+pk.getTipoUp()+"(\""+pk.getNomeColumn()+"\")";

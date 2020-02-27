@@ -60,7 +60,7 @@ public class Generatore {
 		//Riferimento(from, to, tipoRelazione, tipoFetch, navigabile?)
 		//se tipoFetch == null, ma è navigabile, viene scelto il tipo di caricamento più appropriato
 		Riferimento<ClasseProblema> c1_c2 = new Riferimento<ClasseProblema>(c1, c2, ONE_TO_MANY, LAZY_LOAD, true);
-		Riferimento<ClasseProblema> c2_c1 = new Riferimento<ClasseProblema>(c2, c1, MANY_TO_ONE, LAZY_LOAD, true);
+		Riferimento<ClasseProblema> c2_c1 = new Riferimento<ClasseProblema>(c2, c1, MANY_TO_ONE, EAGER, true);
 		Riferimento<ClasseProblema> c2_c3 = new Riferimento<ClasseProblema>(c2, c3, MANY_TO_MANY, LAZY_LOAD, true);
 		Riferimento<ClasseProblema> c3_c2 = new Riferimento<ClasseProblema>(c3, c2, MANY_TO_MANY, LAZY_LOAD, true);
 
