@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="it.unibo.tw.beans.WorkPackage" table="work_package">
+
+		<id name="idWorkPackage" column="id_workpackage">
+			<generator class="increment"/>
+		</id>
+
+
+		<property  name="nomeWP" column="nome_wp" unique="true" not-null="true"/>
+
+		<property name="titolo" column="titolo" not-null="true"/>
+		<property name="descrizione" column="descrizione" not-null="true"/>
+
+		<many-to-one name="idProgetto" class="it.unibo.tw.beans.Progetto" column="id_progetto" />
+		<set name="partners" inverse="true" lazy="true" fetch="select" >
+			<key column="id_workpackage" />
+			<many-to-many column="id_partner" class="it.unibo.tw.beans.Partner" />
+		</set>
+		
+	</class>
+</hibernate-mapping>
