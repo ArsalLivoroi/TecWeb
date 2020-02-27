@@ -44,7 +44,7 @@ public class GeneratoreHIBERNATE {
 	private void generaManager() {
 		File outputDirectory = new File("./out/it/unibo/tw/");
 		//outputDirectory.getParentFile().mkdirs();
-		String input = "./resourcesHIBERNATE/Manager.ftl";
+		String input = "./resources/HIBERNATE/Manager.ftl";
 		GeneratoreFileHIBERNATE_FTL GD;
 		try {
 			GD = new GeneratoreFileHIBERNATE_FTL();
@@ -298,7 +298,7 @@ public class GeneratoreHIBERNATE {
 	private void generaHBM_XML() {
 		File outputDirectory = new File("./out/it/unibo/tw/");
 		//outputDirectory.getParentFile().mkdirs();
-		String input = "./resourcesHIBERNATE/HBM_XML.ftl";
+		String input = "./resources/HIBERNATE/HBM_XML.ftl";
 		GeneratoreFileHIBERNATE_FTL GD;
 		try {
 			GD = new GeneratoreFileHIBERNATE_FTL();
@@ -326,7 +326,7 @@ public class GeneratoreHIBERNATE {
 				managers.add(manager);
 		}	
 		File outputDirectory = new File("./out/it/unibo/tw/");
-		String input = "./resourcesHIBERNATE/CFG_XML.ftl";
+		String input = "./resources/HIBERNATE/CFG_XML.ftl";
 		GeneratoreFileHIBERNATE_FTL GD;
 		try {
 			GD = new GeneratoreFileHIBERNATE_FTL();
@@ -347,7 +347,7 @@ public class GeneratoreHIBERNATE {
 				managers.add(manager);
 		}	
 		File outputDirectory = new File("./out/it/unibo/tw/");
-		String input = "./resourcesHIBERNATE/HIBERNATETest.ftl";
+		String input = "./resources/HIBERNATE/HIBERNATETest.ftl";
 		GeneratoreFileHIBERNATE_FTL GD;
 		try {
 			GD = new GeneratoreFileHIBERNATE_FTL();
