@@ -41,7 +41,7 @@ public class Generatore {
 	private static Problema inizializzaProblema() {
 
 		//--1.Tecnologia richiesta  (JDBC | DAO | HIBERNATE)
-		problema = new Problema(DAO); 
+		problema = new Problema(HIBERNATE); 
 
 		//--2.Classi UML	new ClasseProblema("nome classe", "nome plurale");
 		ClasseProblema c1 = new ClasseProblema("Progetto", "Progetti");
