@@ -73,7 +73,7 @@ public class GeneratoreDAO {
 				daos.add(db2Dao);
 		}	
 		File outputDirectory = new File("./out/it/unibo/tw/");
-		String input = "./resourcesDAO/DAOTest.ftl";
+		String input = "./resources/DAO/DAOTest.ftl";
 		GeneratoreFileDAO_FTL GD;
 		try {
 			GD = new GeneratoreFileDAO_FTL();
@@ -94,7 +94,7 @@ public class GeneratoreDAO {
 				daos.add(db2Dao);
 		}	
 		File outputDirectory = new File("./out/it/unibo/tw/dao/db2/");
-		String input = "./resourcesDAO/DB2DAOFactory.ftl";
+		String input = "./resources/DAO/DB2DAOFactory.ftl";
 		GeneratoreFileDAO_FTL GD;
 		try {
 			GD = new GeneratoreFileDAO_FTL();
@@ -115,7 +115,7 @@ public class GeneratoreDAO {
 				daos.add(db2Dao);
 		}	
 		File outputDirectory = new File("./out/it/unibo/tw/dao/");
-		String input = "./resourcesDAO/DAOFactory.ftl";
+		String input = "./resources/DAO/DAOFactory.ftl";
 		GeneratoreFileDAO_FTL GD;
 		try {
 			GD = new GeneratoreFileDAO_FTL();
@@ -168,7 +168,7 @@ public class GeneratoreDAO {
 	private void generaDB2Dao() {
 		File outputDirectory = new File("./out/it/unibo/tw/dao/db2/");
 		//outputDirectory.getParentFile().mkdirs();
-		String input = "./resourcesDAO/DB2DAO.ftl";
+		String input = "./resources/DAO/DB2DAO.ftl";
 		GeneratoreFileDAO_FTL GD;
 		try {
 			GD = new GeneratoreFileDAO_FTL();
@@ -190,7 +190,7 @@ public class GeneratoreDAO {
 	private void generaDAO() {
 		File outputDirectory = new File("./out/it/unibo/tw/dao/");
 		//outputDirectory.getParentFile().mkdirs();
-		String input = "./resourcesDAO/DAO.ftl";
+		String input = "./resources/DAO/DAO.ftl";
 		GeneratoreFileDAO_FTL GD;
 		try {
 			GD = new GeneratoreFileDAO_FTL();
@@ -400,7 +400,7 @@ public class GeneratoreDAO {
 
 		File outputDirectory = new File("./out/it/unibo/tw/dao/db2/");
 		//outputDirectory.getParentFile().mkdirs();
-		String input = "./resourcesDAO/DB2DTOProxy.ftl";
+		String input = "./resources/DAO/DB2DTOProxy.ftl";
 		GeneratoreFileDAO_FTL GB;
 		try {
 			GB = new GeneratoreFileDAO_FTL();

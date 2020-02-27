@@ -1,7 +1,0 @@
-User:
-    name: Name
-    age: int
-
-Name:
-    firstName: String
-    lastName: String
