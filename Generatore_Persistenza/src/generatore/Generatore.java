@@ -40,8 +40,10 @@ public class Generatore {
 
 	private static Problema inizializzaProblema() {
 
+		//Esempio: esame del 21 Giungo 2019 
+		
 		//--1.Tecnologia richiesta  (JDBC | DAO | HIBERNATE)
-		problema = new Problema(HIBERNATE); 
+		problema = new Problema(DAO); 
 
 		//--2.Classi UML	new ClasseProblema("nome classe", "nome plurale");
 		ClasseProblema c1 = new ClasseProblema("Progetto", "Progetti");
