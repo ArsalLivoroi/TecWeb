@@ -186,7 +186,7 @@ public class UtilsDAO {
 	
 	private static String dateSQLtoJAVA(Attributo atr) {
 		String result="\n";
-		result+="\t\t\t\tlong secs = rs.get"+atr.getTipo()+"(\""+ atr.getNome() + "\").getTime();\n";
+		result+="\t\t\t\tlong secs = rs.get"+atr.getTipo()+"(\""+ atr.getNomeColumn() + "\").getTime();\n";
 		result+="\t\t\t\tjava.util.Date dataJAVA = new java.util.Date(secs);";
 		return result;
 	}
@@ -320,16 +320,40 @@ public class UtilsDAO {
 		mmq.m4c.add("ResultSet rs = statement.executeQuery();");
 		mmq.m4d.add("if ( rs.next() ) {");
 		mmq.m4d.add(	"	result = new "+ db2dao.getNomeBean() +"();");
+		
+		String tmp;
 		for(Attributo atr : db2dao.getAllAttributi()) {
-			String tmp;
 			if(!atr.getTipo().equals(Generatore.DATE)) {
-				tmp = 	"rs.get"+atr.getTipoUp()+"(\""+atr.getNome()+"\")";
+				tmp = 	"rs.get"+atr.getTipoUp()+"(\""+atr.getNomeColumn()+"\")";
 			}else {
 				mmq.m4d.add(	"	"+dateSQLtoJAVA(atr));
 				tmp="dataJAVA";
 			}
 			mmq.m4d.add(	"	result.set"+atr.getNomeUp()+"("+tmp+");");
 		}
+		
+		Set<Riferimento<? extends Classe>> refs = db2dao.getRiferimenti();
+		for(Riferimento<? extends Classe> r: refs) {
+			if(r.getThereIsDirectReferences() && !r.getIsLazyLoad()) {
+				Attributo atri = r.getAttributo();
+				Attributo pk = r.getTo().getPrimaryKey();
+				tmp = "rs.get"+pk.getTipoUp()+"(\""+pk.getNomeColumn()+"\")";
+				
+				String t = r.getTipoRelazione();
+				if(t.equals("n1")||t.equals("11")) {
+					tmp = "new DB2"+r.getTo().getNome()+"DAO().readBy"+pk.getNomeUp()+"("+tmp+")";
+					mmq.m4d.add(	"	result.set"+r.getTo().getNome()+"("+tmp+");");
+				}else{
+					//if(t.equals("nm"))
+						tmp = "new DB2"+r.getTo().getNome()+"DAO().find"+r.getTo().getNomePlurale()+"By"+r.getFrom().getPrimaryKey().getNomeUp()+"("+tmp+")";
+					//else
+						//tmp = "new DB2"+r.getTo().getNome()+"DAO().findBy"+pk.getNomeUp()+"("+tmp+")";
+					mmq.m4d.add(	"	result.set"+r.getTo().getNomePlurale()+"("+tmp+");");
+				}
+				
+			}
+		}
+		
 		mmq.m4d.add("}");
 		
 		mmq.m4e.add("rs.close();");
@@ -443,7 +467,7 @@ public class UtilsDAO {
 			
 			//String tmp;
 			if(!atri.getTipo().equals(Generatore.DATE)) {
-				tmp = "rs.get"+atri.getTipoUp()+"(\""+atri.getNome()+"\")";
+				tmp = "rs.get"+atri.getTipoUp()+"(\""+atri.getNomeColumn()+"\")";
 			}else {
 				mmq.m4d.add(	"	"+dateSQLtoJAVA(atri));
 				tmp="dataJAVA";
@@ -454,11 +478,12 @@ public class UtilsDAO {
 		}
 		
 		Set<Riferimento<? extends Classe>> refs = mf.getClasseTarget().getRiferimenti();
+		//Set<Riferimento<? extends Classe>> refs = db2dao.getRiferimenti();
 		for(Riferimento<? extends Classe> r: refs) {
-			if(r.thereIsDirectReferences() && !r.getIsLazyLoad()) {
+			if(r.getThereIsDirectReferences() && !r.getIsLazyLoad()) {
 				Attributo atri = r.getAttributo();
 				Attributo pk = r.getTo().getPrimaryKey();
-				tmp = "rs.get"+pk.getTipoUp()+"(\""+pk.getNomeUp()+"\")";
+				tmp = "rs.get"+pk.getTipoUp()+"(\""+pk.getNomeColumn()+"\")";
 				
 				String t = r.getTipoRelazione();
 				if(t.equals("n1")||t.equals("11")) {

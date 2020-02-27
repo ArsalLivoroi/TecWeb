@@ -161,7 +161,7 @@ public class UtilsHIBERNATE {
 		MappingMetodoQuery mmq = new MappingMetodoQuery();
 		MMQinizializato(mmq);
 		
-		mmq.setNomeMetodo(nomeQuery);
+		mmq.setNomeMetodo(nomeMetodoQuery);
 		mmq.setTipoRitorno("Set<"+mf.getClasseTarget().getNomeBean()+">");
 
 

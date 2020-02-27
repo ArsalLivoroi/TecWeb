@@ -101,10 +101,10 @@ public class Riferimento<T extends Classe> {
 		return tipoFetch;
 	}
 	
-	public boolean thereIsDirectReferences() {
+	public boolean getThereIsDirectReferences() {
 		return thereIsDirectReferences;
 	}
-	
+
 //	public  void impostaAttributo() {
 //		if(this.thereIsDirectReferences) {
 //			if(this.tipoRelazione.equals("1n"))

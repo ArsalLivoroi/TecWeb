@@ -235,7 +235,7 @@ public class GeneratoreDAO {
 			ClasseProblema c = mp.getClasseProblema();
 			if(c!=null)
 				for(Riferimento<? extends Classe> r: c.getRiferimenti()) {
-					Riferimento<DB2DAO> relazione = new Riferimento<DB2DAO>(mp.getDB2DAO(), this.get(r.getTo()).getDB2DAO(), r.getTipoRelazione(), r.getTipoFetch(), r.thereIsDirectReferences());
+					Riferimento<DB2DAO> relazione = new Riferimento<DB2DAO>(mp.getDB2DAO(), this.get(r.getTo()).getDB2DAO(), r.getTipoRelazione(), r.getTipoFetch(), r.getThereIsDirectReferences());
 					switch (relazione.getTipoRelazione()) {
 					case "1n":
 						impostaDB2DAO1N(relazione );
@@ -307,7 +307,7 @@ public class GeneratoreDAO {
 		mf.setPossessore(classeMapping);
 		classeMapping.addMetodoFind(mf);
 		//System.out.println(relazione.thereIsDirectReferences());
-		if(relazione.thereIsDirectReferences())
+		if(relazione.getThereIsDirectReferences())
 			proxyMapping.add(mf);
 		
 		
@@ -328,25 +328,30 @@ public class GeneratoreDAO {
 	}
 
 	private void impostaDB2DAON1(Riferimento<DB2DAO> relazione) {
-		if(!relazione.thereIsDirectReferences()) {
-			Attributo a = relazione.getTo().getPrimaryKey();	
-			relazione.getFrom().addAttributo(a);
-
-			//#TODO  capire se serve la navigabilità diretta (tramite riferimento ) o basta l'id;
-			relazione.clear();  
-		}	
+//		if(!relazione.getThereIsDirectReferences()) {
+//			Attributo a = relazione.getTo().getPrimaryKey();	
+//			relazione.getFrom().addAttributo(a);
+//
+//			//#TODO  capire se serve la navigabilità diretta (tramite riferimento ) o basta l'id;
+//			
+//		}
+			//relazione.clear();  
 	}
 
 	private void impostaDB2DAO1N(Riferimento<DB2DAO> relazione) {
-		if(relazione.thereIsDirectReferences()) {
+		if(relazione.getThereIsDirectReferences()) {
 			//TODO attenzione: getPrimaryKey in caso di classi con più primarykey genererà un file che risulterà incorretto secondo le specifiche del es;
 			MetodoFind<DB2DAO> mf = new MetodoFind<DB2DAO>(relazione.getTo(), relazione.getFrom(), relazione.getFrom().getPrimaryKey(),relazione.getIsLazyLoad());
 			mf.setPossessore(relazione.getTo());
 			relazione.getTo().addMetodoFind(mf);
-			if(relazione.thereIsDirectReferences())
+			if(relazione.getThereIsDirectReferences())
 				proxyMapping.add(mf);
 			//relazione.getFromClasse().addDb2References(relazione.getToClasse());
+			  
 		}
+		//else
+		//relazione.clear();
+		
 	}
 	//-----END DAO---------------------
 
@@ -430,7 +435,7 @@ public class GeneratoreDAO {
 		for(MappingDAO mp: map) {
 			ClasseProblema c = mp.getClasseProblema();
 			for(Riferimento<? extends Classe> r: c.getRiferimenti()) {
-				Riferimento<Bean> relazione = new Riferimento<Bean>(mp.getBeanDTO(), this.get(r.getTo()).getBeanDTO(), r.getTipoRelazione(), r.getTipoFetch(), r.thereIsDirectReferences());
+				Riferimento<Bean> relazione = new Riferimento<Bean>(mp.getBeanDTO(), this.get(r.getTo()).getBeanDTO(), r.getTipoRelazione(), r.getTipoFetch(), r.getThereIsDirectReferences());
 				switch (relazione.getTipoRelazione()) {
 				case "1n":
 					impostaBean1N(relazione );
@@ -457,7 +462,7 @@ public class GeneratoreDAO {
 
 		boolean esiste = (esisteBean(nomeMapping(from, to)) || esisteBean(nomeMapping(to, from)));
 
-		if(!relazione.thereIsDirectReferences()) {
+		if(!relazione.getThereIsDirectReferences()) {
 			if(!esiste) {
 				String nomeClasseMapping = nomeMapping(from, to);
 				Bean classeMapping = new Bean(nomeClasseMapping, nomeClasseMapping, nomeClasseMapping+"DTO");
@@ -478,7 +483,7 @@ public class GeneratoreDAO {
 	}
 
 	private void impostaBeanN1(Riferimento<Bean> riferimento) {
-		if(!riferimento.thereIsDirectReferences()) {
+		if(!riferimento.getThereIsDirectReferences()) {
 			Attributo a = riferimento.getTo().getPrimaryKey();	
 			riferimento.getFrom().addAttributo(a);
 

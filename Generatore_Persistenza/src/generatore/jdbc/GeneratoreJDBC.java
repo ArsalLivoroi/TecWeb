@@ -89,7 +89,7 @@ public class GeneratoreJDBC {
 			ClasseProblema c = mp.getClasseProblema();
 			if(c!=null)
 				for(Riferimento<? extends Classe> r: c.getRiferimenti()) {
-					Riferimento<Repository> relazione = new Riferimento<Repository>(mp.getRepository(), this.get(r.getTo()).getRepository(), r.getTipoRelazione(), r.getTipoFetch(), r.thereIsDirectReferences());
+					Riferimento<Repository> relazione = new Riferimento<Repository>(mp.getRepository(), this.get(r.getTo()).getRepository(), r.getTipoRelazione(), r.getTipoFetch(), r.getThereIsDirectReferences());
 					switch (relazione.getTipoRelazione()) {
 					case "1n":
 						impostaRepository1N(relazione );
@@ -202,7 +202,7 @@ public class GeneratoreJDBC {
 
 
 	private void impostaRepository1N(Riferimento<Repository> relazione) {
-		if(relazione.thereIsDirectReferences()) {
+		if(relazione.getThereIsDirectReferences()) {
 			//TODO attenzione: getPrimaryKey in caso di classi con più primarykey genererà un file che risulterà incorretto secondo le specifiche del es;
 			MetodoFind<Repository> mf = new MetodoFind<Repository>(relazione.getTo(), relazione.getFrom(), relazione.getFrom().getPrimaryKey(),relazione.getIsLazyLoad());
 			mf.setPossessore(relazione.getTo());
@@ -265,7 +265,7 @@ public class GeneratoreJDBC {
 		for(MappingJDBC mp: map) {
 			ClasseProblema c = mp.getClasseProblema();
 			for(Riferimento<? extends Classe> r: c.getRiferimenti()) {
-				Riferimento<Bean> relazione = new Riferimento<Bean>(mp.getBean(), this.get(r.getTo()).getBean(), r.getTipoRelazione(), r.getTipoFetch(), r.thereIsDirectReferences());
+				Riferimento<Bean> relazione = new Riferimento<Bean>(mp.getBean(), this.get(r.getTo()).getBean(), r.getTipoRelazione(), r.getTipoFetch(), r.getThereIsDirectReferences());
 				switch (relazione.getTipoRelazione()) {
 				case "1n":
 					impostaBean1N(relazione );
@@ -304,7 +304,7 @@ public class GeneratoreJDBC {
 
 		boolean esiste = (esisteBean(nomeMapping(from, to)) || esisteBean(nomeMapping(to, from)));
 
-		if(!riferimento.thereIsDirectReferences()) {
+		if(!riferimento.getThereIsDirectReferences()) {
 			if(!esiste) {
 				String nomeClasseMapping = nomeMapping(from, to);
 				Bean classeMapping = new Bean(nomeClasseMapping, nomeClasseMapping, nomeClasseMapping);
@@ -325,7 +325,7 @@ public class GeneratoreJDBC {
 	}
 
 	private void impostaBeanN1(Riferimento<Bean> riferimento) {
-		if(!riferimento.thereIsDirectReferences()) {
+		if(!riferimento.getThereIsDirectReferences()) {
 			Attributo a = riferimento.getTo().getPrimaryKey();	
 			riferimento.getFrom().addAttributo(a);
 

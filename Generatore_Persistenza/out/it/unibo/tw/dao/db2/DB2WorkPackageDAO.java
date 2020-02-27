@@ -65,6 +65,7 @@ public class DB2WorkPackageDAO implements WorkPackageDAO{
 				"nome_wp VARCHAR(100) NOT NULL, "+
 				"titolo VARCHAR(100) NOT NULL, "+
 				"descrizione VARCHAR(100) NOT NULL, "+
+				"id_progetto INT NOT NULL, "+
 				"FOREING KEY(id_progetto) REFERENCES progetto(id_progetto) "+
 				"UNIQUE(nome_wp), "+
 				"PRIMARY KEY(idWorkPackage) " +
@@ -166,10 +167,11 @@ public class DB2WorkPackageDAO implements WorkPackageDAO{
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			if ( rs.next() ) {
 				result = new WorkPackageDTO();
-				result.setIdWorkPackage(rs.getInt("idWorkPackage"));
-				result.setNomeWP(rs.getString("nomeWP"));
+				result.setIdWorkPackage(rs.getInt("id_workpackage"));
+				result.setNomeWP(rs.getString("nome_wp"));
 				result.setTitolo(rs.getString("titolo"));
 				result.setDescrizione(rs.getString("descrizione"));
+				result.setProgetto(new DB2ProgettoDAO().readByIdProgetto(rs.getInt("id_progetto")));
 			}
 			// --- e. Rilascia la struttura dati del risultato      
 			rs.close();
@@ -210,10 +212,11 @@ public class DB2WorkPackageDAO implements WorkPackageDAO{
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			if ( rs.next() ) {
 				result = new WorkPackageDTO();
-				result.setIdWorkPackage(rs.getInt("idWorkPackage"));
-				result.setNomeWP(rs.getString("nomeWP"));
+				result.setIdWorkPackage(rs.getInt("id_workpackage"));
+				result.setNomeWP(rs.getString("nome_wp"));
 				result.setTitolo(rs.getString("titolo"));
 				result.setDescrizione(rs.getString("descrizione"));
+				result.setProgetto(new DB2ProgettoDAO().readByIdProgetto(rs.getInt("id_progetto")));
 			}
 			// --- e. Rilascia la struttura dati del risultato      
 			rs.close();
@@ -455,10 +458,11 @@ public class DB2WorkPackageDAO implements WorkPackageDAO{
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			while( rs.next() ) {
 				WorkPackageDTO entity = new DB2WorkPackageDTOProxy();
-				entity.setIdWorkPackage(rs.getInt("idWorkPackage"));
-				entity.setNomeWP(rs.getString("nomeWP"));
+				entity.setIdWorkPackage(rs.getInt("id_workpackage"));
+				entity.setNomeWP(rs.getString("nome_wp"));
 				entity.setTitolo(rs.getString("titolo"));
 				entity.setDescrizione(rs.getString("descrizione"));
+				entity.setProgetto(new DB2ProgettoDAO().readByIdProgetto(rs.getInt("id_progetto")));
 				result.add(entity);
 			}
 			// --- e. Rilascia la struttura dati del risultato      
@@ -500,10 +504,11 @@ public class DB2WorkPackageDAO implements WorkPackageDAO{
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			while( rs.next() ) {
 				WorkPackageDTO entity = new DB2WorkPackageDTOProxy();
-				entity.setIdWorkPackage(rs.getInt("idWorkPackage"));
-				entity.setNomeWP(rs.getString("nomeWP"));
+				entity.setIdWorkPackage(rs.getInt("id_workpackage"));
+				entity.setNomeWP(rs.getString("nome_wp"));
 				entity.setTitolo(rs.getString("titolo"));
 				entity.setDescrizione(rs.getString("descrizione"));
+				entity.setProgetto(new DB2ProgettoDAO().readByIdProgetto(rs.getInt("id_progetto")));
 				result.add(entity);
 			}
 			// --- e. Rilascia la struttura dati del risultato      
@@ -545,10 +550,11 @@ public class DB2WorkPackageDAO implements WorkPackageDAO{
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			while( rs.next() ) {
 				WorkPackageDTO entity = new DB2WorkPackageDTOProxy();
-				entity.setIdWorkPackage(rs.getInt("idWorkPackage"));
-				entity.setNomeWP(rs.getString("nomeWP"));
+				entity.setIdWorkPackage(rs.getInt("id_workpackage"));
+				entity.setNomeWP(rs.getString("nome_wp"));
 				entity.setTitolo(rs.getString("titolo"));
 				entity.setDescrizione(rs.getString("descrizione"));
+				entity.setProgetto(new DB2ProgettoDAO().readByIdProgetto(rs.getInt("id_progetto")));
 				result.add(entity);
 			}
 			// --- e. Rilascia la struttura dati del risultato      

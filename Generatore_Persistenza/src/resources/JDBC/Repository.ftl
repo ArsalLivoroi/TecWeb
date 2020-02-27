@@ -87,7 +87,12 @@ public class ${repository.nomeRepository}{
 				"${attributo.nomeColumn} ${attributo.tipoDB?upper_case} NOT NULL, "+
 </#list>
 <#list repository.riferimenti as riferimento>
+<#if riferimento?contains("n1")||riferimento?contains("11")>
+<#if riferimento.thereIsDirectReferences && !repository.nome?contains("Mapping")>
+				"${riferimento.to.primaryKey.nomeColumn} ${riferimento.to.primaryKey.tipoDB?upper_case} NOT NULL, "+
+</#if>
 				"FOREING KEY(<#list riferimento.to.primaryKeys as primaryKey>${primaryKey.nomeColumn}<#if primaryKey?has_next>,</#if></#list>) REFERENCES ${riferimento.to.nomeTabella}(<#list riferimento.to.primaryKeys as primaryKey>${primaryKey.nomeColumn}<#if primaryKey?has_next>, </#if></#list>) "+
+</#if>
 </#list>
 <#list repository.unique as unique>
 				"UNIQUE(<#list unique.attributi as attributo>${attributo.nomeColumn}<#if attributo?has_next>, </#if></#list>), "+

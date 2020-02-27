@@ -151,8 +151,8 @@ public class DB2PartnerDAO implements PartnerDAO{
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			if ( rs.next() ) {
 				result = new PartnerDTO();
-				result.setIdPartner(rs.getInt("idPartner"));
-				result.setSiglaPartner(rs.getString("siglaPartner"));
+				result.setIdPartner(rs.getInt("id_partner"));
+				result.setSiglaPartner(rs.getString("sigla_partner"));
 				result.setNome(rs.getString("nome"));
 			}
 			// --- e. Rilascia la struttura dati del risultato      
@@ -194,8 +194,8 @@ public class DB2PartnerDAO implements PartnerDAO{
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			if ( rs.next() ) {
 				result = new PartnerDTO();
-				result.setIdPartner(rs.getInt("idPartner"));
-				result.setSiglaPartner(rs.getString("siglaPartner"));
+				result.setIdPartner(rs.getInt("id_partner"));
+				result.setSiglaPartner(rs.getString("sigla_partner"));
 				result.setNome(rs.getString("nome"));
 			}
 			// --- e. Rilascia la struttura dati del risultato      
@@ -437,8 +437,8 @@ public class DB2PartnerDAO implements PartnerDAO{
 			// --- d. Cicla sul risultato (se presente) per accedere ai valori di ogni sua tupla      
 			while( rs.next() ) {
 				PartnerDTO entity = new DB2PartnerDTOProxy();
-				entity.setIdPartner(rs.getInt("idPartner"));
-				entity.setSiglaPartner(rs.getString("siglaPartner"));
+				entity.setIdPartner(rs.getInt("id_partner"));
+				entity.setSiglaPartner(rs.getString("sigla_partner"));
 				entity.setNome(rs.getString("nome"));
 				result.add(entity);
 			}
