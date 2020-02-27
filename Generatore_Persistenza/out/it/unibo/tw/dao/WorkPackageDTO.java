@@ -1,9 +1,9 @@
-package it.unibo.tw;
+package it.unibo.tw.dao;
 
 import java.io.Serializable;
 import java.util.*;
 
-public class WorkPackage implements Serializable{
+public class WorkPackageDTO implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 
@@ -13,17 +13,19 @@ public class WorkPackage implements Serializable{
 	private String descrizione;
 
 
-	private Progetto progetto;
-	private Set<Partner> partners; 
+	private ProgettoDTO progetto;
+	private Set<PartnerDTO> partners; 
+	private boolean listaPartnersIsAlreadyLoaded;
 	
 	// --- costruttore ----------
 
-	public WorkPackage(){
-		this.progetto = new Progetto();
-		this.partners = new HashSet<Partner>();
+	public WorkPackageDTO(){
+		this.progetto = new ProgettoDTO();
+		this.partners = new HashSet<PartnerDTO>();
+		this.listaPartnersIsAlreadyLoaded=false;
 	}
 
-	public WorkPackage(int idWorkPackage, String nomeWP, String titolo, String descrizione){
+	public WorkPackageDTO(int idWorkPackage, String nomeWP, String titolo, String descrizione){
 		this();
 		this.idWorkPackage = idWorkPackage;
 		this.nomeWP = nomeWP;
@@ -58,17 +60,23 @@ public class WorkPackage implements Serializable{
 		this.descrizione = descrizione;
 	}
 
-	public Progetto getProgetto(){
+	public ProgettoDTO getProgetto(){
 		return progetto;
 	}
-	public void setProgetto(Progetto progetto){
+	public void setProgetto(ProgettoDTO progetto){
 		this.progetto = progetto;
 	}	
-	public Set<Partner> getPartners(){
+	public Set<PartnerDTO> getPartners(){
 		return partners;
 	}
-	public void setPartners(Set<Partner> partners){
+	public void setPartners(Set<PartnerDTO> partners){
 		this.partners = partners;
+	}
+	public boolean listaPartnersIsAlreadyLoaded(){
+		return this.listaPartnersIsAlreadyLoaded;
+	}
+	public void listaPartnersIsAlreadyLoaded(boolean loaded){
+		this.listaPartnersIsAlreadyLoaded = loaded;
 	}
 
 	// --- utilities ----------------------------
@@ -81,7 +89,7 @@ public class WorkPackage implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		WorkPackage other = (WorkPackage) obj;
+		WorkPackageDTO other = (WorkPackageDTO) obj;
 		if (this.idWorkPackage != other.idWorkPackage)
 			return false;
 		return true;

@@ -1,9 +1,9 @@
-package it.unibo.tw;
+package it.unibo.tw.dao;
 
 import java.io.Serializable;
 import java.util.*;
 
-public class Progetto implements Serializable{
+public class ProgettoDTO implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 
@@ -14,15 +14,17 @@ public class Progetto implements Serializable{
 	private int durata;
 
 
-	private Set<WorkPackage> workPackages; 
+	private Set<WorkPackageDTO> workPackages; 
+	private boolean listaWorkPackagesIsAlreadyLoaded;
 	
 	// --- costruttore ----------
 
-	public Progetto(){
-		this.workPackages = new HashSet<WorkPackage>();
+	public ProgettoDTO(){
+		this.workPackages = new HashSet<WorkPackageDTO>();
+		this.listaWorkPackagesIsAlreadyLoaded=false;
 	}
 
-	public Progetto(int idProgetto, String codiceProgetto, String nomeProgetto, int annoInizio, int durata){
+	public ProgettoDTO(int idProgetto, String codiceProgetto, String nomeProgetto, int annoInizio, int durata){
 		this();
 		this.idProgetto = idProgetto;
 		this.codiceProgetto = codiceProgetto;
@@ -64,11 +66,17 @@ public class Progetto implements Serializable{
 		this.durata = durata;
 	}
 
-	public Set<WorkPackage> getWorkPackages(){
+	public Set<WorkPackageDTO> getWorkPackages(){
 		return workPackages;
 	}
-	public void setWorkPackages(Set<WorkPackage> workPackages){
+	public void setWorkPackages(Set<WorkPackageDTO> workPackages){
 		this.workPackages = workPackages;
+	}
+	public boolean listaWorkPackagesIsAlreadyLoaded(){
+		return this.listaWorkPackagesIsAlreadyLoaded;
+	}
+	public void listaWorkPackagesIsAlreadyLoaded(boolean loaded){
+		this.listaWorkPackagesIsAlreadyLoaded = loaded;
 	}
 
 	// --- utilities ----------------------------
@@ -81,7 +89,7 @@ public class Progetto implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Progetto other = (Progetto) obj;
+		ProgettoDTO other = (ProgettoDTO) obj;
 		if (this.idProgetto != other.idProgetto)
 			return false;
 		return true;
