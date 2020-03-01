@@ -407,7 +407,7 @@ public class GeneratoreHIBERNATE {
 
 			for(MappingHIBERNATE mp : mapping) {
 				Manager manager = mp.getManager();
-				if(manager != null && !manager.getHaveUML()) {
+				if(manager != null && manager.getHaveUML()) {
 					manager.inizializzaMMQ();
 					GD.generateJavaManagerFiles(manager, input, manager.getNomeBean() + ".hbm.xml", outputDirectory);
 				}
