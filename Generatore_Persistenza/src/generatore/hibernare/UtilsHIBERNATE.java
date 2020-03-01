@@ -132,10 +132,22 @@ public class UtilsHIBERNATE {
 		mmq.setNomeMetodo("insert");
 		mmq.setTipoRitorno("boolean");
 
-		Attributo a = (new Attributo(manager.getNomeBean(), manager.getNomeOggetto()));
-
-		mmq.byAttributi = a.getTipo() + " " + a.getNome();
+		//Attributo a = (new Attributo(manager.getNomeBean(), manager.getNomeOggetto()));
+		//mmq.byAttributi = a.getTipo() + " " + a.getNome();
 	
+		String atribs = "";
+		Set<Attributo> list = new LinkedHashSet<Attributo>();
+		if(manager.getHaveUML())
+			list.add(new Attributo(manager.getNomeBean(), manager.getNomeOggetto()));
+		else 
+			list.addAll(manager.getAllAttributi());
+		
+		for(Attributo a: list)
+			atribs += a.getTipo() + " " + a.getNome() + ", ";
+		atribs = atribs.substring(0, atribs.length() - 2);
+		//}
+		mmq.byAttributi = atribs;
+		
 		mmq.m1.add("boolean result = false;");
 		mmq.m1.add("Session session = factory.openSession();");
 		mmq.getM1().add("Transaction tx = null;");
@@ -237,6 +249,19 @@ public class UtilsHIBERNATE {
 		atribs = atribs.substring(0, atribs.length() - 2);
 		//}
 		mmq.byAttributi = atribs;
+		
+//		String atribs = "";
+//		Set<Attributo> list = new LinkedHashSet<Attributo>();
+//		if(manager.getHaveUML())
+//			list.add(new Attributo(manager.getNomeBean(), manager.getNomeOggetto()));
+//		else 
+//			list.addAll(manager.getAllAttributi());
+//		
+//		for(Attributo a: list)
+//			atribs += a.getTipo() + " " + a.getNome() + ", ";
+//		atribs = atribs.substring(0, atribs.length() - 2);
+//		//}
+//		mmq.byAttributi = atribs;
 	
 		mmq.m1.add("boolean result = false;");
 		mmq.m1.add("Session session = factory.openSession();");

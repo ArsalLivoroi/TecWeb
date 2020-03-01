@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import generatore.global.Bean;
 import generatore.global.Classe;
 import generatore.global.Utils;
+import generatore.hibernare.Manager;
 import generatore.problema.Attributo;
 import generatore.problema.ClasseProblema;
 import generatore.problema.MetodoFind;
@@ -276,7 +277,8 @@ public class GeneratoreDAO {
 		MappingDAO mp;
 		if(!esiste) {
 			String nome = nomeMapping(fromClasse, toClasse);
-			classeMapping = new DB2DAO(nome, nome, nomeTabellaMapping(fromClasse, toClasse));
+			String nomeTabella = nomeTabellaMapping(fromClasse, toClasse);
+			classeMapping = new DB2DAO(nome, nome, nomeTabella);
 			mp = (new MappingDAO());
 			mp.setDB2DAO(classeMapping);
 			mapping.add(mp);
@@ -289,7 +291,8 @@ public class GeneratoreDAO {
 			if(mp == null)
 				mp = getMappingDB2Dao(nomeMapping(toClasse, fromClasse));
 			String nome = mp.getDB2DAO().getNome();
-			classeMapping = new DB2DAO(nome, nome, nomeTabellaMapping(fromClasse, toClasse));
+			String nomeTabella = mp.getDB2DAO().getNomeTabella();
+			classeMapping = new DB2DAO(nome, nome, nomeTabella);
 			mp.setDB2DAO(classeMapping);
 		}
 

@@ -72,7 +72,9 @@ public class Manager extends Classe{
 			nomeQuery+="_"+atr.getNome();
 			nomeMetodoQuery+=atr.getNomeUp();
 		}
-		deletes.add(UtilsHIBERNATE.inizializzaMMQUpdate(this,"delete"));
+		if(!nomeManager.contains("Mapping")) {
+			deletes.add(UtilsHIBERNATE.inizializzaMMQUpdate(this,"delete"));
+		}	
 		deletes.add(UtilsHIBERNATE.inizializzaMMQDelete(this, nomeQuery, nomeMetodoQuery, this.getPrimaryKeys()));
 		
 		for(Unique un: this.getUnique()) {

@@ -6,7 +6,7 @@ import it.unibo.tw.dao.*;
 
 public class DB2WorkPackagePartnerMappingDAO implements WorkPackagePartnerMappingDAO{
 	
-	static final String TABLE = "Partner_WorkPackage_Mapping";
+	static final String TABLE = "WorkPackage_Partner_Mapping";
 	// == STATEMENT SQL ====================================================================
 
 	// INSERT INTO table ( id, name, description, ...) VALUES ( ?,?, ... );	
@@ -46,13 +46,13 @@ public class DB2WorkPackagePartnerMappingDAO implements WorkPackagePartnerMappin
 	static final String find_work_package_by_idPartner = 
 			" SELECT * "+
 			" FROM "+ TABLE + ", work_package "+
-			" WHERE Partner_WorkPackage_Mapping.id_workpackage = work_package.id_workpackage"+
+			" WHERE WorkPackage_Partner_Mapping.id_workpackage = work_package.id_workpackage"+
 			" AND id_partner = ? ";
 			
 	static final String find_partner_by_idWorkPackage = 
 			" SELECT * "+
 			" FROM "+ TABLE + ", partner "+
-			" WHERE Partner_WorkPackage_Mapping.id_partner = partner.id_partner"+
+			" WHERE WorkPackage_Partner_Mapping.id_partner = partner.id_partner"+
 			" AND id_workpackage = ? ";
 			
 	
