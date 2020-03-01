@@ -8,6 +8,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.Hibernate;
+
+import generatore.dao.DB2DAO;
+import generatore.dao.MappingDAO;
 import generatore.global.Bean;
 import generatore.global.Classe;
 import generatore.global.Utils;
@@ -120,23 +124,104 @@ public class GeneratoreHIBERNATE {
 		
 	}
 
-//	private MappingHIBERNATE getMappingHIBERNATE(String nome) {
-//		Manager b=null;
-//		for(MappingHIBERNATE mp: mapping) {
-//			b=mp.getManager();
-//			if(b!=null && b.getNome().equals(nome)) {
-//				return mp;
-//			}
-//		}
-//		return null;
-//	}
+	private MappingHIBERNATE getMappingHIBERNATE(String nome) {
+		Manager b=null;
+		for(MappingHIBERNATE mp: mapping) {
+			b=mp.getManager();
+			if(b!=null && b.getNome().equals(nome)) {
+				return mp;
+			}
+		}
+		return null;
+	}
+	
+	
+	private boolean esisteManager(String nome) {
+		boolean res=false;
+		Manager b=null;
+		for(MappingHIBERNATE mp: mapping) {
+			b=mp.getManager();
+			if(b!=null && b.getNome().equals(nome)) {
+				return true;
+			}
+		}
+		return res;
+	}
+	
+	private String nomeMapping(Classe from, Classe to) {
+		return from.getNome() + to.getNome() +"Mapping";
+	}
+
+
+	private String nomeTabellaMapping(Classe from, Classe to) {
+		return from.getNome() +"_"+ to.getNome();// +"_Mapping";
+	}
 
 	private void impostaManagerNM(Riferimento<Manager> relazione) {
+		//TODO creare le tamelle di mapping
+//		MetodoFind<Manager> mf = new MetodoFind<Manager>(relazione.getTo(), relazione.getFrom(), relazione.getFrom().getPrimaryKey(),false);
+//		mf.setPossessore(relazione.getTo());
+//		relazione.getTo().addMetodoFind(mf);
 		
-		MetodoFind<Manager> mf = new MetodoFind<Manager>(relazione.getTo(), relazione.getFrom(), relazione.getFrom().getPrimaryKey(),false);
-		mf.setPossessore(relazione.getTo());
-		relazione.getTo().addMetodoFind(mf);
 		
+		
+		Manager fromClasse = relazione.getFrom();
+		Manager toClasse = relazione.getTo();
+
+		boolean esiste = (esisteManager(nomeMapping(fromClasse, toClasse)) || esisteManager(nomeMapping(toClasse, fromClasse)));
+
+		Manager classeMapping;
+		MappingHIBERNATE mp;
+		String nomeTabella;
+		if(!esiste) {
+			String nome = nomeMapping(fromClasse, toClasse);
+			nomeTabella = nomeTabellaMapping(fromClasse, toClasse);
+			classeMapping = new Manager(nome, nome, nomeTabella);
+			mp = (new MappingHIBERNATE());
+			mp.setManager(classeMapping);
+			mapping.add(mp);
+		}else {
+			mp = getMappingHIBERNATE(nomeMapping(fromClasse, toClasse));
+			if(mp == null)
+				mp = getMappingHIBERNATE(nomeMapping(toClasse, fromClasse));
+			String nome = mp.getManager().getNome();
+			nomeTabella = mp.getManager().getNomeTabella();
+			classeMapping = new Manager(nome, nome, nomeTabella);
+			mp.setManager(classeMapping);
+		}
+		relazione.setNomeTabella(nomeTabella);
+
+		for(Attributo a : fromClasse.getPrimaryKeys())
+			classeMapping.addPrimaryKey(a);
+		for(Attributo a : toClasse.getPrimaryKeys())
+			classeMapping.addPrimaryKey(a);
+
+		new Riferimento<Manager>(classeMapping, toClasse, "n1", null, true);
+		new Riferimento<Manager>(classeMapping, fromClasse, "n1", null, true);
+
+		//FIND
+		//for(Attributo atr: fromClasse.getPrimaryKeys())
+		MetodoFind<Manager> mf = new MetodoFind<Manager>(toClasse, fromClasse, fromClasse.getPrimaryKey(),relazione.getIsLazyLoad());
+		mf.setPossessore(classeMapping);
+		classeMapping.addMetodoFind(mf);
+		//System.out.println(relazione.thereIsDirectReferences());
+//		if(relazione.getThereIsDirectReferences())
+//			proxyMapping.add(mf);
+		
+		
+		for(Unique un: fromClasse.getUnique())
+			if(un.getAttributi().size()>1)
+				for(Attributo atr: un.getAttributi())
+					classeMapping.addMetodoFind(new MetodoFind<Manager>(toClasse, fromClasse, atr,relazione.getIsLazyLoad()));
+
+		for(Attributo atr: toClasse.getPrimaryKeys())
+			classeMapping.addMetodoFind(new MetodoFind<Manager>(fromClasse, toClasse, atr,relazione.getIsLazyLoad()));
+		for(Unique un: toClasse.getUnique())
+			if(un.getAttributi().size()>1)
+				for(Attributo atr: un.getAttributi())
+					classeMapping.addMetodoFind(new MetodoFind<Manager>(fromClasse, toClasse, atr,relazione.getIsLazyLoad()));
+
+		//relazione.clear();
 	}
 
 
@@ -151,6 +236,22 @@ public class GeneratoreHIBERNATE {
 
 	
 	//-------END Manager------------------
+
+	
+	
+	private void impostaHaveUML() {
+		for(MappingHIBERNATE mp: mapping) {
+			Manager db = mp.getManager();
+			if(db!=null) {
+				//System.out.println("____"+);
+				if(get(db).getBean()!=null) {
+					db.setHaveUML(true);
+				}else {
+					db.setHaveUML(false);
+				}
+			}
+		}
+	}
 	
 	//-------BEAN------------------
 	private void generaBean() {
@@ -281,7 +382,8 @@ public class GeneratoreHIBERNATE {
 	
 	
 	public void generate() {
-
+		impostaHaveUML();
+		
 		Utils.deleteFolder(new File("./out"));
 		File outputDirectory = new File("./out/it/unibo/tw");
 		outputDirectory.mkdirs();
@@ -305,7 +407,7 @@ public class GeneratoreHIBERNATE {
 
 			for(MappingHIBERNATE mp : mapping) {
 				Manager manager = mp.getManager();
-				if(manager != null) {
+				if(manager != null && !manager.getHaveUML()) {
 					manager.inizializzaMMQ();
 					GD.generateJavaManagerFiles(manager, input, manager.getNomeBean() + ".hbm.xml", outputDirectory);
 				}

@@ -55,14 +55,15 @@ public class Generatore {
 		problema.addClasseProblema(c2);
 		problema.addClasseProblema(c3);
 		
-		//--4.per ogni relazione tra 2 classi, creare 2 riferimenti (una per ogni direzione di lettura)
+		//--4.per ogni relazione tra 2 classi, creare 2 riferimenti (una per ogni direzione di lettura, anche se non navigabile)
 		//(crea in automatico la classe mapping se necessario)
 		//Riferimento(from, to, tipoRelazione, tipoFetch, navigabile?)
 		//se tipoFetch == null, ma è navigabile, viene scelto il tipo di caricamento più appropriato
-		Riferimento<ClasseProblema> c1_c2 = new Riferimento<ClasseProblema>(c1, c2, ONE_TO_MANY, LAZY_LOAD, true);
-		Riferimento<ClasseProblema> c2_c1 = new Riferimento<ClasseProblema>(c2, c1, MANY_TO_ONE, EAGER, true);
-		Riferimento<ClasseProblema> c2_c3 = new Riferimento<ClasseProblema>(c2, c3, MANY_TO_MANY, LAZY_LOAD, true);
-		Riferimento<ClasseProblema> c3_c2 = new Riferimento<ClasseProblema>(c3, c2, MANY_TO_MANY, LAZY_LOAD, true);
+		//Riferimento<ClasseProblema> c1_c2 = new Riferimento<ClasseProblema>(c1, c2, ONE_TO_MANY, null | LAZY_LOAD | EAGER, true | false);
+		Riferimento<ClasseProblema> c1_c2 = new Riferimento<ClasseProblema>(c1, c2, ONE_TO_MANY, null, true);
+		Riferimento<ClasseProblema> c2_c1 = new Riferimento<ClasseProblema>(c2, c1, MANY_TO_ONE, null, true);
+		Riferimento<ClasseProblema> c2_c3 = new Riferimento<ClasseProblema>(c2, c3, MANY_TO_MANY, null, true);
+		Riferimento<ClasseProblema> c3_c2 = new Riferimento<ClasseProblema>(c3, c2, MANY_TO_MANY, null, true);
 
 		//--5.PrimatyKey Se specificato, altrimenti viene aggiunto in automatico l'ID surrogato
 		//c1.addPrimaryKey(new Attributo(STRING, "targa"));	

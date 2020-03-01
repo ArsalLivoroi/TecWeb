@@ -57,11 +57,26 @@ public class TestHIB {
 </#macro>
 		
 <#list managers as classe>
+<#if !classe.nome?contains("Mapping")>
 <@popola_tabelle classe/>
+</#if>
 </#list>
 
 	<#-- POPOLA_TABELLE_MAPPING -->
-<#macro popola_tabelle_mapping relazione>
+<#macro popola_tabelle_mapping classe>
+		// ${classe.nome}
+		${classe.nomeManager?uncap_first} = new ${classe.nomeManager}(conn);
+		${classe.nomeManager?uncap_first}.drop();
+		${classe.nomeManager?uncap_first}.createTable();
+		
+</#macro>
+<#list managers as classe>
+<#if classe.nome?contains("Mapping")>
+<@popola_tabelle_mapping classe/>
+</#if>
+</#list>
+<#-- POPOLA_TABELLE_TOMANY -->
+<#macro popola_tabelle_toMany relazione>
 		for(${relazione.from.nomeBean} ${relazione.from.nome?uncap_first}1:  ${relazione.from.nomePlurale?uncap_first}){
 			${relazione.from.nome?uncap_first}1.set${relazione.to.nomePlurale}(${relazione.to.nomePlurale?uncap_first});
 			${relazione.from.nomeManager?uncap_first}.update(${relazione.from.nome?uncap_first}1);
@@ -69,13 +84,12 @@ public class TestHIB {
 </#macro>
 <#list managers as classe>
 	<#list classe.riferimenti as relazione>
-		<#if relazione?contains("1n") || relazione?contains("nm")>
-<@popola_tabelle_mapping relazione/>
+		<#if relazione.thereIsDirectReferences && (relazione?contains("1n") || relazione?contains("nm"))>
+<@popola_tabelle_toMany relazione/>
 		</#if>
 	</#list>
 </#list>
-		<#-- METODI_RICHIESTI -->
-		
+<#-- METODI_RICHIESTI -->
 		//Scrivi su file
 		try {
 			pw = new PrintWriter(new FileWriter(NOME_FILE));

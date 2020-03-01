@@ -136,31 +136,30 @@ public class ${manager.nomeManager}{
 	}
 	
 </#macro>
-	
+
+<#if !manager.nome?contains("Mapping")>	
 	//Create
 <@metodo_tlf manager.insert />
 
 	//Update
 <@metodo_tlf manager.update />
+</#if>	
 
 	//Create Table
 <@metodo_tlf manager.createtable />
 
 	//Drop Table
 <@metodo_tlf manager.droptable />
-	 
+	
+<#--   
 <#if manager.haveUML>
 	//Read By
 <#list manager.reads as read>
 <@metodo_tlf read />
 </#list>
 </#if>
-<#-- 
-<#if !manager.nome?contains("Mapping")>
-	//Update
-<@metodo_tlf manager.update />
-</#if>	
--->	
+-->
+
 	//Delete
 <#list manager.deletes as delete>
 <@metodo_tlf delete />

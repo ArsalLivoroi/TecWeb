@@ -7,6 +7,7 @@ import java.util.*;
 import generatore.global.Bean;
 import generatore.global.Classe;
 import generatore.global.Utils;
+import generatore.hibernare.Manager;
 import generatore.jdbc.MappingJDBC;
 import generatore.problema.Attributo;
 import generatore.problema.ClasseProblema;
@@ -147,7 +148,8 @@ public class GeneratoreJDBC {
 		MappingJDBC mp;
 		if(!esiste) {
 			String nome = nomeMapping(fromClasse, toClasse);
-			classeMapping = new Repository(nome, nome, nomeTabellaMapping(fromClasse, toClasse));
+			String nomeTabella = nomeTabellaMapping(fromClasse, toClasse);
+			classeMapping = new Repository(nome, nome, nomeTabella);
 			mp = (new MappingJDBC());
 			mp.setRepository(classeMapping);
 			mapping.add(mp);
@@ -160,7 +162,8 @@ public class GeneratoreJDBC {
 			if(mp == null)
 				mp = getMappingJDBC(nomeMapping(toClasse, fromClasse));
 			String nome = mp.getRepository().getNome();
-			classeMapping = new Repository(nome, nome, nomeTabellaMapping(fromClasse, toClasse));
+			String nomeTabella = mp.getRepository().getNomeTabella();
+			classeMapping = new Repository(nome, nome, nomeTabella);
 			mp.setRepository(classeMapping);
 		}
 

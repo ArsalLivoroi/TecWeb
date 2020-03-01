@@ -26,6 +26,7 @@ public class JDBCTest {
 		${classe.nomeRepository?uncap_first}.createTable();
 		
 		${classe.nomeBean} ${classe.nome?uncap_first};
+		Set<${classe.nomeBean}> ${classe.nomePlurale?uncap_first} = new HashSet<${classe.nomeBean}>();
 <#list [1,2,3] as x>
 		${classe.nome?uncap_first} = new ${classe.nomeBean}();
 	<#list classe.primaryKeys as attributo>
@@ -46,6 +47,7 @@ public class JDBCTest {
 		</#if>
 	</#list>
 		${classe.nomeRepository?uncap_first}.create(${classe.nome?uncap_first});
+		${classe.nomePlurale?uncap_first}.add(${classe.nome?uncap_first});
 		
 </#list>
 		
@@ -74,6 +76,21 @@ public class JDBCTest {
 <#if classe.nome?contains("Mapping")>
 <@popola_tabelle_mapping classe/>
 </#if>
+</#list>
+
+<#-- POPOLA_TABELLE_TOMANY -->
+<#macro popola_tabelle_toMany relazione>
+		for(${relazione.from.nomeBean} ${relazione.from.nome?uncap_first}1:  ${relazione.from.nomePlurale?uncap_first}){
+			${relazione.from.nome?uncap_first}1.set${relazione.to.nomePlurale}(${relazione.to.nomePlurale?uncap_first});
+			${relazione.from.nomeRepository?uncap_first}.update(${relazione.from.nome?uncap_first}1);
+		}	
+</#macro>
+<#list repositories as classe>
+	<#list classe.riferimenti as relazione>
+		<#if relazione.thereIsDirectReferences && (relazione?contains("1n") || relazione?contains("nm"))>
+<@popola_tabelle_toMany relazione/>
+		</#if>
+	</#list>
 </#list>
 		<#-- METODI_RICHIESTI -->
 		

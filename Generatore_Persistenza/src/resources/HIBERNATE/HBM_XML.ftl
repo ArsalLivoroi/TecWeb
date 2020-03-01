@@ -49,7 +49,7 @@
 	<#elseif riferimento.tipoRelazione?contains("n1")>
 		<many-to-one name="${riferimento.to.primaryKey.nome}" class="it.unibo.tw.beans.${riferimento.to.nome}" column="${riferimento.to.primaryKey.nomeColumn}" />
 	<#elseif riferimento.tipoRelazione?contains("nm")>
-		<set name="${riferimento.to.nomePlurale?uncap_first}" inverse="true" lazy="${riferimento.isLazyLoad?c}" fetch="select" >
+		<set name="${riferimento.to.nomePlurale?uncap_first}" table="${riferimento.nomeTabella}" inverse="true" lazy="${riferimento.isLazyLoad?c}" fetch="select" >
 			<key column="${riferimento.from.primaryKey.nomeColumn}" />
 			<many-to-many column="${riferimento.to.primaryKey.nomeColumn}" class="it.unibo.tw.beans.${riferimento.to.nome}" />
 		</set>

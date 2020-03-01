@@ -26,12 +26,14 @@ public class DAOTest {
 		workPackageDAO.createTable();
 		
 		WorkPackageDTO workPackage;
+		Set<WorkPackageDTO> workPackages = new HashSet<WorkPackageDTO>();
 		workPackage = new WorkPackageDTO();
 		workPackage.setIdWorkPackage(1);
 		workPackage.setNomeWP("nomeWP_1");
 		workPackage.setTitolo("titolo_1");
 		workPackage.setDescrizione("descrizione_1");
 		workPackageDAO.create(workPackage);
+		workPackages.add(workPackage);
 		
 		workPackage = new WorkPackageDTO();
 		workPackage.setIdWorkPackage(2);
@@ -39,6 +41,7 @@ public class DAOTest {
 		workPackage.setTitolo("titolo_2");
 		workPackage.setDescrizione("descrizione_2");
 		workPackageDAO.create(workPackage);
+		workPackages.add(workPackage);
 		
 		workPackage = new WorkPackageDTO();
 		workPackage.setIdWorkPackage(3);
@@ -46,6 +49,7 @@ public class DAOTest {
 		workPackage.setTitolo("titolo_3");
 		workPackage.setDescrizione("descrizione_3");
 		workPackageDAO.create(workPackage);
+		workPackages.add(workPackage);
 		
 		
 		// Progetto
@@ -54,6 +58,7 @@ public class DAOTest {
 		progettoDAO.createTable();
 		
 		ProgettoDTO progetto;
+		Set<ProgettoDTO> progetti = new HashSet<ProgettoDTO>();
 		progetto = new ProgettoDTO();
 		progetto.setIdProgetto(1);
 		progetto.setCodiceProgetto("codiceProgetto_1");
@@ -61,6 +66,7 @@ public class DAOTest {
 		progetto.setAnnoInizio(1);
 		progetto.setDurata(1);
 		progettoDAO.create(progetto);
+		progetti.add(progetto);
 		
 		progetto = new ProgettoDTO();
 		progetto.setIdProgetto(2);
@@ -69,6 +75,7 @@ public class DAOTest {
 		progetto.setAnnoInizio(2);
 		progetto.setDurata(2);
 		progettoDAO.create(progetto);
+		progetti.add(progetto);
 		
 		progetto = new ProgettoDTO();
 		progetto.setIdProgetto(3);
@@ -77,6 +84,7 @@ public class DAOTest {
 		progetto.setAnnoInizio(3);
 		progetto.setDurata(3);
 		progettoDAO.create(progetto);
+		progetti.add(progetto);
 		
 		
 		// Partner
@@ -85,23 +93,27 @@ public class DAOTest {
 		partnerDAO.createTable();
 		
 		PartnerDTO partner;
+		Set<PartnerDTO> partners = new HashSet<PartnerDTO>();
 		partner = new PartnerDTO();
 		partner.setIdPartner(1);
 		partner.setSiglaPartner("siglaPartner_1");
 		partner.setNome("nome_1");
 		partnerDAO.create(partner);
+		partners.add(partner);
 		
 		partner = new PartnerDTO();
 		partner.setIdPartner(2);
 		partner.setSiglaPartner("siglaPartner_2");
 		partner.setNome("nome_2");
 		partnerDAO.create(partner);
+		partners.add(partner);
 		
 		partner = new PartnerDTO();
 		partner.setIdPartner(3);
 		partner.setSiglaPartner("siglaPartner_3");
 		partner.setNome("nome_3");
 		partnerDAO.create(partner);
+		partners.add(partner);
 		
 		
 
@@ -119,6 +131,11 @@ public class DAOTest {
 		workPackagePartnerMappingDAO.create(3,2);
 		workPackagePartnerMappingDAO.create(3,3);
 		
+
+		for(ProgettoDTO progetto1:  progetti){
+			progetto1.setWorkPackages(workPackages);
+			progettoDAO.update(progetto1);
+		}	
 		
 		//Scrivi su file
 		try {

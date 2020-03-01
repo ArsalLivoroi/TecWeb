@@ -18,11 +18,19 @@ public class Riferimento<T extends Classe> {
 	private Attributo attributo;
 	private String commento ="";
 	//private boolean isLazyLoad;
+	private String nomeTabella;
 	
 	
 	public Riferimento(T fromClasse, T toClasse, String tipoRelazione, String tipoFetch,
 			boolean thereIsDirectReferences) {
 		checkTipoRelazione(tipoRelazione);
+		if(Generatore.problema.getTecnologia().equals(Generatore.HIBERNATE)&&
+				!thereIsDirectReferences) {
+			System.err.println("Attenzione: Riferimento<ClasseProblema>---------------");
+			System.err.println("	In HIBERNATE non è stata implemenatata la non navigailità");
+			System.err.println("	Verra impostata automaticamente a true");
+			thereIsDirectReferences=true;
+		}
 		this.tipoRelazione = tipoRelazione.toLowerCase();
 		this.from = fromClasse;
 		this.to = toClasse;
@@ -172,6 +180,14 @@ public class Riferimento<T extends Classe> {
 		return from.getNome()+ "-" + 
 				to.getNome() +" "+ 
 				/*this.attributo.getNome()*/ " : "+tipoRelazione; 
+	}
+
+	public String getNomeTabella() {
+		return nomeTabella;
+	}
+
+	public void setNomeTabella(String nomeTabella) {
+		this.nomeTabella = nomeTabella;
 	}
 
 }
